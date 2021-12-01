@@ -114,7 +114,7 @@ static void initializeAllSensors(void);
 static volatile uint8_t hasTrained = 0;
 unsigned int training_cycles = TRAINING_CYCLES;
 
-void ezprint(char *format[], ...) {
+void EZPRINT(char *format[], ...) {
 	char buffer[128];
 	va_list args;
 	va_start(args, format);
