@@ -7,17 +7,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         0001d068  08004190  08004190  00004190  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000a60  080211f8  080211f8  000211f8  2**3
+  2 .rodata       00000a68  080211f8  080211f8  000211f8  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM          00000008  08021c58  08021c58  00021c58  2**2
+  3 .ARM          00000008  08021c60  08021c60  00021c60  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .init_array   00000004  08021c60  08021c60  00021c60  2**2
+  4 .init_array   00000004  08021c68  08021c68  00021c68  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  5 .fini_array   00000004  08021c64  08021c64  00021c64  2**2
+  5 .fini_array   00000004  08021c6c  08021c6c  00021c6c  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .data         000006e8  20000000  08021c68  00030000  2**2
+  6 .data         000006e8  20000000  08021c70  00030000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .bss          0000273c  200006e8  08022350  000306e8  2**2
+  7 .bss          0000273c  200006e8  08022358  000306e8  2**2
                   ALLOC
   8 .noinit       00000000  10000000  10000000  000306e8  2**0
                   CONTENTS
@@ -27,11 +27,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000306e8  2**0
                   CONTENTS, READONLY
- 12 .debug_line   000240c4  00000000  00000000  00030718  2**0
+ 12 .debug_line   000240c5  00000000  00000000  00030718  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_info   00009ffd  00000000  00000000  000547dc  2**0
+ 13 .debug_info   00009ffd  00000000  00000000  000547dd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 000016ea  00000000  00000000  0005e7d9  2**0
+ 14 .debug_abbrev 000016ea  00000000  00000000  0005e7da  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_aranges 000042a0  00000000  00000000  0005fec8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -1441,7 +1441,7 @@ LoopForever:
   ldr   sp, =_estack    /* Atollic update: set stack pointer */
  8005094:	20017fff 	.word	0x20017fff
 	ldr	r3, =_sidata
- 8005098:	08021c68 	.word	0x08021c68
+ 8005098:	08021c70 	.word	0x08021c70
 	ldr	r0, =_sdata
  800509c:	20000000 	.word	0x20000000
 	ldr	r3, =_edata
@@ -1715,7 +1715,7 @@ void DATALOG_SD_Init(void)
  8005242:	3708      	adds	r7, #8
  8005244:	46bd      	mov	sp, r7
  8005246:	bd80      	pop	{r7, pc}
- 8005248:	0802174c 	.word	0x0802174c
+ 8005248:	08021754 	.word	0x08021754
  800524c:	20000a6c 	.word	0x20000a6c
 
 08005250 <BP_ANN>:
@@ -3877,492 +3877,493 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	int axis_index;
 	float accel_mag;
 
-	print("\r\nMove to Start Position...");
- 800640a:	4847      	ldr	r0, [pc, #284]	; (8006528 <Feature_Extraction_State_0+0x128>)
+	print("\r\nPrepare for new exercise motion...");
+ 800640a:	484b      	ldr	r0, [pc, #300]	; (8006538 <Feature_Extraction_State_0+0x138>)
  800640c:	f7ff fdf8 	bl	8006000 <print>
-	HAL_Delay(START_POSITION_INTERVAL);
- 8006410:	f640 30b8 	movw	r0, #3000	; 0xbb8
+	HAL_Delay(1000);
+ 8006410:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
  8006414:	f00d fa68 	bl	80138e8 <HAL_Delay>
+	print("\r\nMove to Start Position...");
+ 8006418:	4848      	ldr	r0, [pc, #288]	; (800653c <Feature_Extraction_State_0+0x13c>)
+ 800641a:	f7ff fdf1 	bl	8006000 <print>
+	HAL_Delay(START_POSITION_INTERVAL);
+ 800641e:	f640 30b8 	movw	r0, #3000	; 0xbb8
+ 8006422:	f00d fa61 	bl	80138e8 <HAL_Delay>
 
 	// Acquire acceleration values before motion
 	getAccel(handle, ttt_initial);
- 8006418:	f107 0318 	add.w	r3, r7, #24
- 800641c:	4619      	mov	r1, r3
- 800641e:	6878      	ldr	r0, [r7, #4]
- 8006420:	f7ff ff89 	bl	8006336 <getAccel>
+ 8006426:	f107 0318 	add.w	r3, r7, #24
+ 800642a:	4619      	mov	r1, r3
+ 800642c:	6878      	ldr	r0, [r7, #4]
+ 800642e:	f7ff ff82 	bl	8006336 <getAccel>
 	print("\r\nDone.\n");
- 8006424:	4841      	ldr	r0, [pc, #260]	; (800652c <Feature_Extraction_State_0+0x12c>)
- 8006426:	f7ff fdeb 	bl	8006000 <print>
+ 8006432:	4843      	ldr	r0, [pc, #268]	; (8006540 <Feature_Extraction_State_0+0x140>)
+ 8006434:	f7ff fde4 	bl	8006000 <print>
 
 	// Prompt First Motion
 	print("\r\nStart First Motion...");
- 800642a:	4841      	ldr	r0, [pc, #260]	; (8006530 <Feature_Extraction_State_0+0x130>)
- 800642c:	f7ff fde8 	bl	8006000 <print>
+ 8006438:	4842      	ldr	r0, [pc, #264]	; (8006544 <Feature_Extraction_State_0+0x144>)
+ 800643a:	f7ff fde1 	bl	8006000 <print>
 	BSP_LED_On(LED1);
- 8006430:	2000      	movs	r0, #0
- 8006432:	f00a fd01 	bl	8010e38 <BSP_LED_On>
+ 800643e:	2000      	movs	r0, #0
+ 8006440:	f00a fcfa 	bl	8010e38 <BSP_LED_On>
 
 	HAL_Delay(2000);
- 8006436:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
- 800643a:	f00d fa55 	bl	80138e8 <HAL_Delay>
+ 8006444:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+ 8006448:	f00d fa4e 	bl	80138e8 <HAL_Delay>
 
 	print("\r\nDone.\n");
- 800643e:	483b      	ldr	r0, [pc, #236]	; (800652c <Feature_Extraction_State_0+0x12c>)
- 8006440:	f7ff fdde 	bl	8006000 <print>
+ 800644c:	483c      	ldr	r0, [pc, #240]	; (8006540 <Feature_Extraction_State_0+0x140>)
+ 800644e:	f7ff fdd7 	bl	8006000 <print>
 	HAL_Delay(1000);
- 8006444:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 8006448:	f00d fa4e 	bl	80138e8 <HAL_Delay>
+ 8006452:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+ 8006456:	f00d fa47 	bl	80138e8 <HAL_Delay>
 
 	// Acquire acceleration values after motion
 	getAccel(handle, ttt);
- 800644c:	f107 030c 	add.w	r3, r7, #12
- 8006450:	4619      	mov	r1, r3
- 8006452:	6878      	ldr	r0, [r7, #4]
- 8006454:	f7ff ff6f 	bl	8006336 <getAccel>
+ 800645a:	f107 030c 	add.w	r3, r7, #12
+ 800645e:	4619      	mov	r1, r3
+ 8006460:	6878      	ldr	r0, [r7, #4]
+ 8006462:	f7ff ff68 	bl	8006336 <getAccel>
 
 	// Compute Magnitude of Acceleration
 	for (axis_index = 0; axis_index < 3; axis_index++) {
- 8006458:	2300      	movs	r3, #0
- 800645a:	62bb      	str	r3, [r7, #40]	; 0x28
- 800645c:	e024      	b.n	80064a8 <Feature_Extraction_State_0+0xa8>
+ 8006466:	2300      	movs	r3, #0
+ 8006468:	62bb      	str	r3, [r7, #40]	; 0x28
+ 800646a:	e024      	b.n	80064b6 <Feature_Extraction_State_0+0xb6>
 		accel_mag = pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
- 800645e:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 8006460:	009b      	lsls	r3, r3, #2
- 8006462:	f107 0230 	add.w	r2, r7, #48	; 0x30
- 8006466:	4413      	add	r3, r2
- 8006468:	f853 2c24 	ldr.w	r2, [r3, #-36]
  800646c:	6abb      	ldr	r3, [r7, #40]	; 0x28
  800646e:	009b      	lsls	r3, r3, #2
- 8006470:	f107 0130 	add.w	r1, r7, #48	; 0x30
- 8006474:	440b      	add	r3, r1
- 8006476:	f853 3c18 	ldr.w	r3, [r3, #-24]
- 800647a:	1ad3      	subs	r3, r2, r3
- 800647c:	4618      	mov	r0, r3
- 800647e:	f7fe f851 	bl	8004524 <__aeabi_i2d>
- 8006482:	4602      	mov	r2, r0
- 8006484:	460b      	mov	r3, r1
- 8006486:	ed9f 1b26 	vldr	d1, [pc, #152]	; 8006520 <Feature_Extraction_State_0+0x120>
- 800648a:	ec43 2b10 	vmov	d0, r2, r3
- 800648e:	f019 fec9 	bl	8020224 <pow>
- 8006492:	ec53 2b10 	vmov	r2, r3, d0
- 8006496:	4610      	mov	r0, r2
- 8006498:	4619      	mov	r1, r3
- 800649a:	f7fe fba5 	bl	8004be8 <__aeabi_d2f>
- 800649e:	4603      	mov	r3, r0
- 80064a0:	627b      	str	r3, [r7, #36]	; 0x24
+ 8006470:	f107 0230 	add.w	r2, r7, #48	; 0x30
+ 8006474:	4413      	add	r3, r2
+ 8006476:	f853 2c24 	ldr.w	r2, [r3, #-36]
+ 800647a:	6abb      	ldr	r3, [r7, #40]	; 0x28
+ 800647c:	009b      	lsls	r3, r3, #2
+ 800647e:	f107 0130 	add.w	r1, r7, #48	; 0x30
+ 8006482:	440b      	add	r3, r1
+ 8006484:	f853 3c18 	ldr.w	r3, [r3, #-24]
+ 8006488:	1ad3      	subs	r3, r2, r3
+ 800648a:	4618      	mov	r0, r3
+ 800648c:	f7fe f84a 	bl	8004524 <__aeabi_i2d>
+ 8006490:	4602      	mov	r2, r0
+ 8006492:	460b      	mov	r3, r1
+ 8006494:	ed9f 1b26 	vldr	d1, [pc, #152]	; 8006530 <Feature_Extraction_State_0+0x130>
+ 8006498:	ec43 2b10 	vmov	d0, r2, r3
+ 800649c:	f019 fec2 	bl	8020224 <pow>
+ 80064a0:	ec53 2b10 	vmov	r2, r3, d0
+ 80064a4:	4610      	mov	r0, r2
+ 80064a6:	4619      	mov	r1, r3
+ 80064a8:	f7fe fb9e 	bl	8004be8 <__aeabi_d2f>
+ 80064ac:	4603      	mov	r3, r0
+ 80064ae:	627b      	str	r3, [r7, #36]	; 0x24
 	for (axis_index = 0; axis_index < 3; axis_index++) {
- 80064a2:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 80064a4:	3301      	adds	r3, #1
- 80064a6:	62bb      	str	r3, [r7, #40]	; 0x28
- 80064a8:	6abb      	ldr	r3, [r7, #40]	; 0x28
- 80064aa:	2b02      	cmp	r3, #2
- 80064ac:	ddd7      	ble.n	800645e <Feature_Extraction_State_0+0x5e>
+ 80064b0:	6abb      	ldr	r3, [r7, #40]	; 0x28
+ 80064b2:	3301      	adds	r3, #1
+ 80064b4:	62bb      	str	r3, [r7, #40]	; 0x28
+ 80064b6:	6abb      	ldr	r3, [r7, #40]	; 0x28
+ 80064b8:	2b02      	cmp	r3, #2
+ 80064ba:	ddd7      	ble.n	800646c <Feature_Extraction_State_0+0x6c>
 	}
 
 	accel_mag = sqrt(accel_mag);
- 80064ae:	6a78      	ldr	r0, [r7, #36]	; 0x24
- 80064b0:	f7fe f84a 	bl	8004548 <__aeabi_f2d>
- 80064b4:	4602      	mov	r2, r0
- 80064b6:	460b      	mov	r3, r1
- 80064b8:	ec43 2b10 	vmov	d0, r2, r3
- 80064bc:	f019 ff60 	bl	8020380 <sqrt>
- 80064c0:	ec53 2b10 	vmov	r2, r3, d0
- 80064c4:	4610      	mov	r0, r2
- 80064c6:	4619      	mov	r1, r3
- 80064c8:	f7fe fb8e 	bl	8004be8 <__aeabi_d2f>
- 80064cc:	4603      	mov	r3, r0
- 80064ce:	627b      	str	r3, [r7, #36]	; 0x24
+ 80064bc:	6a78      	ldr	r0, [r7, #36]	; 0x24
+ 80064be:	f7fe f843 	bl	8004548 <__aeabi_f2d>
+ 80064c2:	4602      	mov	r2, r0
+ 80064c4:	460b      	mov	r3, r1
+ 80064c6:	ec43 2b10 	vmov	d0, r2, r3
+ 80064ca:	f019 ff59 	bl	8020380 <sqrt>
+ 80064ce:	ec53 2b10 	vmov	r2, r3, d0
+ 80064d2:	4610      	mov	r0, r2
+ 80064d4:	4619      	mov	r1, r3
+ 80064d6:	f7fe fb87 	bl	8004be8 <__aeabi_d2f>
+ 80064da:	4603      	mov	r3, r0
+ 80064dc:	627b      	str	r3, [r7, #36]	; 0x24
 
 	for (i = 0; i < 3; i++) {
- 80064d0:	2300      	movs	r3, #0
- 80064d2:	62fb      	str	r3, [r7, #44]	; 0x2c
- 80064d4:	e016      	b.n	8006504 <Feature_Extraction_State_0+0x104>
+ 80064de:	2300      	movs	r3, #0
+ 80064e0:	62fb      	str	r3, [r7, #44]	; 0x2c
+ 80064e2:	e016      	b.n	8006512 <Feature_Extraction_State_0+0x112>
 		*(features + i) = ttt[i] - ttt_initial[i];
- 80064d6:	6afb      	ldr	r3, [r7, #44]	; 0x2c
- 80064d8:	009b      	lsls	r3, r3, #2
- 80064da:	f107 0230 	add.w	r2, r7, #48	; 0x30
- 80064de:	4413      	add	r3, r2
- 80064e0:	f853 1c24 	ldr.w	r1, [r3, #-36]
  80064e4:	6afb      	ldr	r3, [r7, #44]	; 0x2c
  80064e6:	009b      	lsls	r3, r3, #2
  80064e8:	f107 0230 	add.w	r2, r7, #48	; 0x30
  80064ec:	4413      	add	r3, r2
- 80064ee:	f853 2c18 	ldr.w	r2, [r3, #-24]
+ 80064ee:	f853 1c24 	ldr.w	r1, [r3, #-36]
  80064f2:	6afb      	ldr	r3, [r7, #44]	; 0x2c
  80064f4:	009b      	lsls	r3, r3, #2
- 80064f6:	6838      	ldr	r0, [r7, #0]
- 80064f8:	4403      	add	r3, r0
- 80064fa:	1a8a      	subs	r2, r1, r2
- 80064fc:	601a      	str	r2, [r3, #0]
+ 80064f6:	f107 0230 	add.w	r2, r7, #48	; 0x30
+ 80064fa:	4413      	add	r3, r2
+ 80064fc:	f853 2c18 	ldr.w	r2, [r3, #-24]
+ 8006500:	6afb      	ldr	r3, [r7, #44]	; 0x2c
+ 8006502:	009b      	lsls	r3, r3, #2
+ 8006504:	6838      	ldr	r0, [r7, #0]
+ 8006506:	4403      	add	r3, r0
+ 8006508:	1a8a      	subs	r2, r1, r2
+ 800650a:	601a      	str	r2, [r3, #0]
 	for (i = 0; i < 3; i++) {
- 80064fe:	6afb      	ldr	r3, [r7, #44]	; 0x2c
- 8006500:	3301      	adds	r3, #1
- 8006502:	62fb      	str	r3, [r7, #44]	; 0x2c
- 8006504:	6afb      	ldr	r3, [r7, #44]	; 0x2c
- 8006506:	2b02      	cmp	r3, #2
- 8006508:	dde5      	ble.n	80064d6 <Feature_Extraction_State_0+0xd6>
+ 800650c:	6afb      	ldr	r3, [r7, #44]	; 0x2c
+ 800650e:	3301      	adds	r3, #1
+ 8006510:	62fb      	str	r3, [r7, #44]	; 0x2c
+ 8006512:	6afb      	ldr	r3, [r7, #44]	; 0x2c
+ 8006514:	2b02      	cmp	r3, #2
+ 8006516:	dde5      	ble.n	80064e4 <Feature_Extraction_State_0+0xe4>
 	}
 
 	BSP_LED_Off(LED1);
- 800650a:	2000      	movs	r0, #0
- 800650c:	f00a fcc2 	bl	8010e94 <BSP_LED_Off>
+ 8006518:	2000      	movs	r0, #0
+ 800651a:	f00a fcbb 	bl	8010e94 <BSP_LED_Off>
 	HAL_Delay(1000);
- 8006510:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 8006514:	f00d f9e8 	bl	80138e8 <HAL_Delay>
+ 800651e:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+ 8006522:	f00d f9e1 	bl	80138e8 <HAL_Delay>
 	return;
- 8006518:	bf00      	nop
+ 8006526:	bf00      	nop
 }
- 800651a:	3730      	adds	r7, #48	; 0x30
- 800651c:	46bd      	mov	sp, r7
- 800651e:	bd80      	pop	{r7, pc}
- 8006520:	00000000 	.word	0x00000000
- 8006524:	40000000 	.word	0x40000000
- 8006528:	080211f8 	.word	0x080211f8
- 800652c:	08021214 	.word	0x08021214
- 8006530:	08021220 	.word	0x08021220
- 8006534:	00000000 	.word	0x00000000
+ 8006528:	3730      	adds	r7, #48	; 0x30
+ 800652a:	46bd      	mov	sp, r7
+ 800652c:	bd80      	pop	{r7, pc}
+ 800652e:	bf00      	nop
+ 8006530:	00000000 	.word	0x00000000
+ 8006534:	40000000 	.word	0x40000000
+ 8006538:	080211f8 	.word	0x080211f8
+ 800653c:	08021220 	.word	0x08021220
+ 8006540:	0802123c 	.word	0x0802123c
+ 8006544:	08021248 	.word	0x08021248
 
-08006538 <Feature_Extraction_State_1>:
+08006548 <Feature_Extraction_State_1>:
 
 /*
  * Feature_Extraction_State_1() determines a second orientation after
  * the action of Feature_Extraction_State_0().
  */
 void Feature_Extraction_State_1(void *handle_g, int *features) {
- 8006538:	b5b0      	push	{r4, r5, r7, lr}
- 800653a:	b094      	sub	sp, #80	; 0x50
- 800653c:	af00      	add	r7, sp, #0
- 800653e:	6078      	str	r0, [r7, #4]
- 8006540:	6039      	str	r1, [r7, #0]
+ 8006548:	b5b0      	push	{r4, r5, r7, lr}
+ 800654a:	b094      	sub	sp, #80	; 0x50
+ 800654c:	af00      	add	r7, sp, #0
+ 800654e:	6078      	str	r0, [r7, #4]
+ 8006550:	6039      	str	r1, [r7, #0]
 	float Tsample;
 	/*
 	* Compute sample period with scaling from milliseconds
 	* to seconds
 	*/
 	Tsample = (float)(DATA_PERIOD_MS)/1000;
- 8006542:	4b9b      	ldr	r3, [pc, #620]	; (80067b0 <Feature_Extraction_State_1+0x278>)
- 8006544:	63fb      	str	r3, [r7, #60]	; 0x3c
+ 8006552:	4b99      	ldr	r3, [pc, #612]	; (80067b8 <Feature_Extraction_State_1+0x270>)
+ 8006554:	63fb      	str	r3, [r7, #60]	; 0x3c
 	/*
 	* Initialize rotation angle values
 	*/
 	for (axis_index = 0; axis_index < 3; axis_index++) {
- 8006546:	2300      	movs	r3, #0
- 8006548:	64fb      	str	r3, [r7, #76]	; 0x4c
- 800654a:	e013      	b.n	8006574 <Feature_Extraction_State_1+0x3c>
+ 8006556:	2300      	movs	r3, #0
+ 8006558:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 800655a:	e013      	b.n	8006584 <Feature_Extraction_State_1+0x3c>
 		ttt[axis_index] = 0;
- 800654c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 800654e:	009b      	lsls	r3, r3, #2
- 8006550:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 8006554:	4413      	add	r3, r2
- 8006556:	2200      	movs	r2, #0
- 8006558:	f843 2c20 	str.w	r2, [r3, #-32]
-		rotate_angle[axis_index] = 0;
  800655c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
  800655e:	009b      	lsls	r3, r3, #2
  8006560:	f107 0250 	add.w	r2, r7, #80	; 0x50
  8006564:	4413      	add	r3, r2
- 8006566:	3b44      	subs	r3, #68	; 0x44
- 8006568:	f04f 0200 	mov.w	r2, #0
- 800656c:	601a      	str	r2, [r3, #0]
+ 8006566:	2200      	movs	r2, #0
+ 8006568:	f843 2c20 	str.w	r2, [r3, #-32]
+		rotate_angle[axis_index] = 0;
+ 800656c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800656e:	009b      	lsls	r3, r3, #2
+ 8006570:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 8006574:	4413      	add	r3, r2
+ 8006576:	3b44      	subs	r3, #68	; 0x44
+ 8006578:	f04f 0200 	mov.w	r2, #0
+ 800657c:	601a      	str	r2, [r3, #0]
 	for (axis_index = 0; axis_index < 3; axis_index++) {
- 800656e:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8006570:	3301      	adds	r3, #1
- 8006572:	64fb      	str	r3, [r7, #76]	; 0x4c
- 8006574:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8006576:	2b02      	cmp	r3, #2
- 8006578:	dde8      	ble.n	800654c <Feature_Extraction_State_1+0x14>
+ 800657e:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006580:	3301      	adds	r3, #1
+ 8006582:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 8006584:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006586:	2b02      	cmp	r3, #2
+ 8006588:	dde8      	ble.n	800655c <Feature_Extraction_State_1+0x14>
 	* Acquire Rotation Rate values prior to motion
 	*
 	* This includes the initial sensor offset value to be subtracted
 	* from all subsequent samples
 	*/
 	getAngularVelocity(handle_g, ttt_offset);
- 800657a:	f107 0318 	add.w	r3, r7, #24
- 800657e:	4619      	mov	r1, r3
- 8006580:	6878      	ldr	r0, [r7, #4]
- 8006582:	f7ff ff0a 	bl	800639a <getAngularVelocity>
+ 800658a:	f107 0318 	add.w	r3, r7, #24
+ 800658e:	4619      	mov	r1, r3
+ 8006590:	6878      	ldr	r0, [r7, #4]
+ 8006592:	f7ff ff02 	bl	800639a <getAngularVelocity>
 	/*
 	* Notify user to initiate motion
 	*/
 	print("\r\nStart Second Motion...");
- 8006586:	488b      	ldr	r0, [pc, #556]	; (80067b4 <Feature_Extraction_State_1+0x27c>)
- 8006588:	f7ff fd3a 	bl	8006000 <print>
+ 8006596:	4889      	ldr	r0, [pc, #548]	; (80067bc <Feature_Extraction_State_1+0x274>)
+ 8006598:	f7ff fd32 	bl	8006000 <print>
 	BSP_LED_On(LED1);
- 800658c:	2000      	movs	r0, #0
- 800658e:	f00a fc53 	bl	8010e38 <BSP_LED_On>
+ 800659c:	2000      	movs	r0, #0
+ 800659e:	f00a fc4b 	bl	8010e38 <BSP_LED_On>
 	for (sample_index = 0; sample_index < MAX_ROTATION_ACQUIRE_CYCLES; sample_index++) {
- 8006592:	2300      	movs	r3, #0
- 8006594:	64bb      	str	r3, [r7, #72]	; 0x48
- 8006596:	e0e3      	b.n	8006760 <Feature_Extraction_State_1+0x228>
+ 80065a2:	2300      	movs	r3, #0
+ 80065a4:	64bb      	str	r3, [r7, #72]	; 0x48
+ 80065a6:	e0e3      	b.n	8006770 <Feature_Extraction_State_1+0x228>
 		/*
 		* Acquire initial sample value of rotation rate and remove
 		* offset value
 		*/
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 8006598:	2300      	movs	r3, #0
- 800659a:	64fb      	str	r3, [r7, #76]	; 0x4c
- 800659c:	e018      	b.n	80065d0 <Feature_Extraction_State_1+0x98>
+ 80065a8:	2300      	movs	r3, #0
+ 80065aa:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 80065ac:	e018      	b.n	80065e0 <Feature_Extraction_State_1+0x98>
 			ttt_initial[axis_index] = ttt[axis_index] - ttt_offset[axis_index];
- 800659e:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065a0:	009b      	lsls	r3, r3, #2
- 80065a2:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 80065a6:	4413      	add	r3, r2
- 80065a8:	f853 2c20 	ldr.w	r2, [r3, #-32]
- 80065ac:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065ae:	009b      	lsls	r3, r3, #2
- 80065b0:	f107 0150 	add.w	r1, r7, #80	; 0x50
- 80065b4:	440b      	add	r3, r1
- 80065b6:	f853 3c38 	ldr.w	r3, [r3, #-56]
- 80065ba:	1ad2      	subs	r2, r2, r3
+ 80065ae:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80065b0:	009b      	lsls	r3, r3, #2
+ 80065b2:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 80065b6:	4413      	add	r3, r2
+ 80065b8:	f853 2c20 	ldr.w	r2, [r3, #-32]
  80065bc:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
  80065be:	009b      	lsls	r3, r3, #2
  80065c0:	f107 0150 	add.w	r1, r7, #80	; 0x50
  80065c4:	440b      	add	r3, r1
- 80065c6:	f843 2c2c 	str.w	r2, [r3, #-44]
+ 80065c6:	f853 3c38 	ldr.w	r3, [r3, #-56]
+ 80065ca:	1ad2      	subs	r2, r2, r3
+ 80065cc:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80065ce:	009b      	lsls	r3, r3, #2
+ 80065d0:	f107 0150 	add.w	r1, r7, #80	; 0x50
+ 80065d4:	440b      	add	r3, r1
+ 80065d6:	f843 2c2c 	str.w	r2, [r3, #-44]
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 80065ca:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065cc:	3301      	adds	r3, #1
- 80065ce:	64fb      	str	r3, [r7, #76]	; 0x4c
- 80065d0:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065d2:	2b02      	cmp	r3, #2
- 80065d4:	dde3      	ble.n	800659e <Feature_Extraction_State_1+0x66>
+ 80065da:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80065dc:	3301      	adds	r3, #1
+ 80065de:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 80065e0:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80065e2:	2b02      	cmp	r3, #2
+ 80065e4:	dde3      	ble.n	80065ae <Feature_Extraction_State_1+0x66>
 		}
 		/*
 		* Introduce integration time period delay
 		*/
 		HAL_Delay(DATA_PERIOD_MS);
- 80065d6:	200a      	movs	r0, #10
- 80065d8:	f00d f986 	bl	80138e8 <HAL_Delay>
+ 80065e6:	200a      	movs	r0, #10
+ 80065e8:	f00d f97e 	bl	80138e8 <HAL_Delay>
 		/*
 		* Acquire current sample value of rotation rate and remove
 		* offset value
 		*/
 		getAngularVelocity(handle_g, ttt);
- 80065dc:	f107 0330 	add.w	r3, r7, #48	; 0x30
- 80065e0:	4619      	mov	r1, r3
- 80065e2:	6878      	ldr	r0, [r7, #4]
- 80065e4:	f7ff fed9 	bl	800639a <getAngularVelocity>
+ 80065ec:	f107 0330 	add.w	r3, r7, #48	; 0x30
+ 80065f0:	4619      	mov	r1, r3
+ 80065f2:	6878      	ldr	r0, [r7, #4]
+ 80065f4:	f7ff fed1 	bl	800639a <getAngularVelocity>
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 80065e8:	2300      	movs	r3, #0
- 80065ea:	64fb      	str	r3, [r7, #76]	; 0x4c
- 80065ec:	e018      	b.n	8006620 <Feature_Extraction_State_1+0xe8>
+ 80065f8:	2300      	movs	r3, #0
+ 80065fa:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 80065fc:	e018      	b.n	8006630 <Feature_Extraction_State_1+0xe8>
 			ttt[axis_index] -= ttt_offset[axis_index];
- 80065ee:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065f0:	009b      	lsls	r3, r3, #2
- 80065f2:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 80065f6:	4413      	add	r3, r2
- 80065f8:	f853 2c20 	ldr.w	r2, [r3, #-32]
- 80065fc:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80065fe:	009b      	lsls	r3, r3, #2
- 8006600:	f107 0150 	add.w	r1, r7, #80	; 0x50
- 8006604:	440b      	add	r3, r1
- 8006606:	f853 3c38 	ldr.w	r3, [r3, #-56]
- 800660a:	1ad2      	subs	r2, r2, r3
+ 80065fe:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006600:	009b      	lsls	r3, r3, #2
+ 8006602:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 8006606:	4413      	add	r3, r2
+ 8006608:	f853 2c20 	ldr.w	r2, [r3, #-32]
  800660c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
  800660e:	009b      	lsls	r3, r3, #2
  8006610:	f107 0150 	add.w	r1, r7, #80	; 0x50
  8006614:	440b      	add	r3, r1
- 8006616:	f843 2c20 	str.w	r2, [r3, #-32]
+ 8006616:	f853 3c38 	ldr.w	r3, [r3, #-56]
+ 800661a:	1ad2      	subs	r2, r2, r3
+ 800661c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800661e:	009b      	lsls	r3, r3, #2
+ 8006620:	f107 0150 	add.w	r1, r7, #80	; 0x50
+ 8006624:	440b      	add	r3, r1
+ 8006626:	f843 2c20 	str.w	r2, [r3, #-32]
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 800661a:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 800661c:	3301      	adds	r3, #1
- 800661e:	64fb      	str	r3, [r7, #76]	; 0x4c
- 8006620:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8006622:	2b02      	cmp	r3, #2
- 8006624:	dde3      	ble.n	80065ee <Feature_Extraction_State_1+0xb6>
+ 800662a:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800662c:	3301      	adds	r3, #1
+ 800662e:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 8006630:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006632:	2b02      	cmp	r3, #2
+ 8006634:	dde3      	ble.n	80065fe <Feature_Extraction_State_1+0xb6>
 		}
 
 		// Compute rotation angles by integration
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 8006626:	2300      	movs	r3, #0
- 8006628:	64fb      	str	r3, [r7, #76]	; 0x4c
- 800662a:	e02f      	b.n	800668c <Feature_Extraction_State_1+0x154>
+ 8006636:	2300      	movs	r3, #0
+ 8006638:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 800663a:	e02f      	b.n	800669c <Feature_Extraction_State_1+0x154>
 			rotate_angle[axis_index] += (float)((ttt_initial[axis_index] + ttt[axis_index]) * Tsample / 2);
- 800662c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 800662e:	009b      	lsls	r3, r3, #2
- 8006630:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 8006634:	4413      	add	r3, r2
- 8006636:	3b44      	subs	r3, #68	; 0x44
- 8006638:	ed93 7a00 	vldr	s14, [r3]
  800663c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
  800663e:	009b      	lsls	r3, r3, #2
  8006640:	f107 0250 	add.w	r2, r7, #80	; 0x50
  8006644:	4413      	add	r3, r2
- 8006646:	f853 2c2c 	ldr.w	r2, [r3, #-44]
- 800664a:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 800664c:	009b      	lsls	r3, r3, #2
- 800664e:	f107 0150 	add.w	r1, r7, #80	; 0x50
- 8006652:	440b      	add	r3, r1
- 8006654:	f853 3c20 	ldr.w	r3, [r3, #-32]
- 8006658:	4413      	add	r3, r2
- 800665a:	ee07 3a90 	vmov	s15, r3
- 800665e:	eef8 6ae7 	vcvt.f32.s32	s13, s15
- 8006662:	edd7 7a0f 	vldr	s15, [r7, #60]	; 0x3c
- 8006666:	ee66 6aa7 	vmul.f32	s13, s13, s15
- 800666a:	eeb0 6a00 	vmov.f32	s12, #0	; 0x40000000  2.0
- 800666e:	eec6 7a86 	vdiv.f32	s15, s13, s12
- 8006672:	ee77 7a27 	vadd.f32	s15, s14, s15
- 8006676:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8006678:	009b      	lsls	r3, r3, #2
- 800667a:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 800667e:	4413      	add	r3, r2
- 8006680:	3b44      	subs	r3, #68	; 0x44
- 8006682:	edc3 7a00 	vstr	s15, [r3]
-		for (axis_index = 0; axis_index < 3; axis_index++) {
+ 8006646:	3b44      	subs	r3, #68	; 0x44
+ 8006648:	ed93 7a00 	vldr	s14, [r3]
+ 800664c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800664e:	009b      	lsls	r3, r3, #2
+ 8006650:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 8006654:	4413      	add	r3, r2
+ 8006656:	f853 2c2c 	ldr.w	r2, [r3, #-44]
+ 800665a:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800665c:	009b      	lsls	r3, r3, #2
+ 800665e:	f107 0150 	add.w	r1, r7, #80	; 0x50
+ 8006662:	440b      	add	r3, r1
+ 8006664:	f853 3c20 	ldr.w	r3, [r3, #-32]
+ 8006668:	4413      	add	r3, r2
+ 800666a:	ee07 3a90 	vmov	s15, r3
+ 800666e:	eef8 6ae7 	vcvt.f32.s32	s13, s15
+ 8006672:	edd7 7a0f 	vldr	s15, [r7, #60]	; 0x3c
+ 8006676:	ee66 6aa7 	vmul.f32	s13, s13, s15
+ 800667a:	eeb0 6a00 	vmov.f32	s12, #0	; 0x40000000  2.0
+ 800667e:	eec6 7a86 	vdiv.f32	s15, s13, s12
+ 8006682:	ee77 7a27 	vadd.f32	s15, s14, s15
  8006686:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8006688:	3301      	adds	r3, #1
- 800668a:	64fb      	str	r3, [r7, #76]	; 0x4c
- 800668c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 800668e:	2b02      	cmp	r3, #2
- 8006690:	ddcc      	ble.n	800662c <Feature_Extraction_State_1+0xf4>
+ 8006688:	009b      	lsls	r3, r3, #2
+ 800668a:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 800668e:	4413      	add	r3, r2
+ 8006690:	3b44      	subs	r3, #68	; 0x44
+ 8006692:	edc3 7a00 	vstr	s15, [r3]
+		for (axis_index = 0; axis_index < 3; axis_index++) {
+ 8006696:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006698:	3301      	adds	r3, #1
+ 800669a:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 800669c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 800669e:	2b02      	cmp	r3, #2
+ 80066a0:	ddcc      	ble.n	800663c <Feature_Extraction_State_1+0xf4>
 		*
 		* Convert from milli-degrees to degrees (Note that Rotation
 		* Rate is sampled in milli-degrees per second).
 		*
 		*/
 		angle_mag = 0;
- 8006692:	f04f 0300 	mov.w	r3, #0
- 8006696:	643b      	str	r3, [r7, #64]	; 0x40
+ 80066a2:	f04f 0300 	mov.w	r3, #0
+ 80066a6:	643b      	str	r3, [r7, #64]	; 0x40
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 8006698:	2300      	movs	r3, #0
- 800669a:	64fb      	str	r3, [r7, #76]	; 0x4c
- 800669c:	e027      	b.n	80066ee <Feature_Extraction_State_1+0x1b6>
+ 80066a8:	2300      	movs	r3, #0
+ 80066aa:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 80066ac:	e027      	b.n	80066fe <Feature_Extraction_State_1+0x1b6>
 			angle_mag += pow((rotate_angle[axis_index]), 2);
- 800669e:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80066a0:	009b      	lsls	r3, r3, #2
- 80066a2:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 80066a6:	4413      	add	r3, r2
- 80066a8:	3b44      	subs	r3, #68	; 0x44
- 80066aa:	681b      	ldr	r3, [r3, #0]
- 80066ac:	4618      	mov	r0, r3
- 80066ae:	f7fd ff4b 	bl	8004548 <__aeabi_f2d>
- 80066b2:	4602      	mov	r2, r0
- 80066b4:	460b      	mov	r3, r1
- 80066b6:	ed9f 1b3c 	vldr	d1, [pc, #240]	; 80067a8 <Feature_Extraction_State_1+0x270>
- 80066ba:	ec43 2b10 	vmov	d0, r2, r3
- 80066be:	f019 fdb1 	bl	8020224 <pow>
- 80066c2:	ec55 4b10 	vmov	r4, r5, d0
- 80066c6:	6c38      	ldr	r0, [r7, #64]	; 0x40
- 80066c8:	f7fd ff3e 	bl	8004548 <__aeabi_f2d>
- 80066cc:	4602      	mov	r2, r0
- 80066ce:	460b      	mov	r3, r1
- 80066d0:	4620      	mov	r0, r4
- 80066d2:	4629      	mov	r1, r5
- 80066d4:	f7fd fdda 	bl	800428c <__adddf3>
- 80066d8:	4602      	mov	r2, r0
- 80066da:	460b      	mov	r3, r1
- 80066dc:	4610      	mov	r0, r2
- 80066de:	4619      	mov	r1, r3
- 80066e0:	f7fe fa82 	bl	8004be8 <__aeabi_d2f>
- 80066e4:	4603      	mov	r3, r0
- 80066e6:	643b      	str	r3, [r7, #64]	; 0x40
+ 80066ae:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80066b0:	009b      	lsls	r3, r3, #2
+ 80066b2:	f107 0250 	add.w	r2, r7, #80	; 0x50
+ 80066b6:	4413      	add	r3, r2
+ 80066b8:	3b44      	subs	r3, #68	; 0x44
+ 80066ba:	681b      	ldr	r3, [r3, #0]
+ 80066bc:	4618      	mov	r0, r3
+ 80066be:	f7fd ff43 	bl	8004548 <__aeabi_f2d>
+ 80066c2:	4602      	mov	r2, r0
+ 80066c4:	460b      	mov	r3, r1
+ 80066c6:	ed9f 1b3a 	vldr	d1, [pc, #232]	; 80067b0 <Feature_Extraction_State_1+0x268>
+ 80066ca:	ec43 2b10 	vmov	d0, r2, r3
+ 80066ce:	f019 fda9 	bl	8020224 <pow>
+ 80066d2:	ec55 4b10 	vmov	r4, r5, d0
+ 80066d6:	6c38      	ldr	r0, [r7, #64]	; 0x40
+ 80066d8:	f7fd ff36 	bl	8004548 <__aeabi_f2d>
+ 80066dc:	4602      	mov	r2, r0
+ 80066de:	460b      	mov	r3, r1
+ 80066e0:	4620      	mov	r0, r4
+ 80066e2:	4629      	mov	r1, r5
+ 80066e4:	f7fd fdd2 	bl	800428c <__adddf3>
+ 80066e8:	4602      	mov	r2, r0
+ 80066ea:	460b      	mov	r3, r1
+ 80066ec:	4610      	mov	r0, r2
+ 80066ee:	4619      	mov	r1, r3
+ 80066f0:	f7fe fa7a 	bl	8004be8 <__aeabi_d2f>
+ 80066f4:	4603      	mov	r3, r0
+ 80066f6:	643b      	str	r3, [r7, #64]	; 0x40
 		for (axis_index = 0; axis_index < 3; axis_index++) {
- 80066e8:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80066ea:	3301      	adds	r3, #1
- 80066ec:	64fb      	str	r3, [r7, #76]	; 0x4c
- 80066ee:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 80066f0:	2b02      	cmp	r3, #2
- 80066f2:	ddd4      	ble.n	800669e <Feature_Extraction_State_1+0x166>
+ 80066f8:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 80066fa:	3301      	adds	r3, #1
+ 80066fc:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 80066fe:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8006700:	2b02      	cmp	r3, #2
+ 8006702:	ddd4      	ble.n	80066ae <Feature_Extraction_State_1+0x166>
 		}
 		/*
 		* Compute angle magnitude and convert from milli-degrees to
 		* degrees
 		*/
 		angle_mag = sqrt(angle_mag)/1000;
- 80066f4:	6c38      	ldr	r0, [r7, #64]	; 0x40
- 80066f6:	f7fd ff27 	bl	8004548 <__aeabi_f2d>
- 80066fa:	4602      	mov	r2, r0
- 80066fc:	460b      	mov	r3, r1
- 80066fe:	ec43 2b10 	vmov	d0, r2, r3
- 8006702:	f019 fe3d 	bl	8020380 <sqrt>
- 8006706:	ec51 0b10 	vmov	r0, r1, d0
- 800670a:	f04f 0200 	mov.w	r2, #0
- 800670e:	4b2a      	ldr	r3, [pc, #168]	; (80067b8 <Feature_Extraction_State_1+0x280>)
- 8006710:	f7fe f89c 	bl	800484c <__aeabi_ddiv>
- 8006714:	4602      	mov	r2, r0
- 8006716:	460b      	mov	r3, r1
- 8006718:	4610      	mov	r0, r2
- 800671a:	4619      	mov	r1, r3
- 800671c:	f7fe fa64 	bl	8004be8 <__aeabi_d2f>
- 8006720:	4603      	mov	r3, r0
- 8006722:	643b      	str	r3, [r7, #64]	; 0x40
+ 8006704:	6c38      	ldr	r0, [r7, #64]	; 0x40
+ 8006706:	f7fd ff1f 	bl	8004548 <__aeabi_f2d>
+ 800670a:	4602      	mov	r2, r0
+ 800670c:	460b      	mov	r3, r1
+ 800670e:	ec43 2b10 	vmov	d0, r2, r3
+ 8006712:	f019 fe35 	bl	8020380 <sqrt>
+ 8006716:	ec51 0b10 	vmov	r0, r1, d0
+ 800671a:	f04f 0200 	mov.w	r2, #0
+ 800671e:	4b28      	ldr	r3, [pc, #160]	; (80067c0 <Feature_Extraction_State_1+0x278>)
+ 8006720:	f7fe f894 	bl	800484c <__aeabi_ddiv>
+ 8006724:	4602      	mov	r2, r0
+ 8006726:	460b      	mov	r3, r1
+ 8006728:	4610      	mov	r0, r2
+ 800672a:	4619      	mov	r1, r3
+ 800672c:	f7fe fa5c 	bl	8004be8 <__aeabi_d2f>
+ 8006730:	4603      	mov	r3, r0
+ 8006732:	643b      	str	r3, [r7, #64]	; 0x40
 
 //		if (angle_mag >= ANGLE_MAG_MAX_THRESHOLD) {
 //			break;
 //		}
 
 		for (i = 0; i < 3; i++) {
- 8006724:	2300      	movs	r3, #0
- 8006726:	647b      	str	r3, [r7, #68]	; 0x44
- 8006728:	e014      	b.n	8006754 <Feature_Extraction_State_1+0x21c>
+ 8006734:	2300      	movs	r3, #0
+ 8006736:	647b      	str	r3, [r7, #68]	; 0x44
+ 8006738:	e014      	b.n	8006764 <Feature_Extraction_State_1+0x21c>
 			*(features + i + 3) = (int) rotate_angle[i];
- 800672a:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 800672c:	009b      	lsls	r3, r3, #2
- 800672e:	f107 0250 	add.w	r2, r7, #80	; 0x50
- 8006732:	4413      	add	r3, r2
- 8006734:	3b44      	subs	r3, #68	; 0x44
- 8006736:	edd3 7a00 	vldr	s15, [r3]
  800673a:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 800673c:	3303      	adds	r3, #3
- 800673e:	009b      	lsls	r3, r3, #2
- 8006740:	683a      	ldr	r2, [r7, #0]
+ 800673c:	009b      	lsls	r3, r3, #2
+ 800673e:	f107 0250 	add.w	r2, r7, #80	; 0x50
  8006742:	4413      	add	r3, r2
- 8006744:	eefd 7ae7 	vcvt.s32.f32	s15, s15
- 8006748:	ee17 2a90 	vmov	r2, s15
- 800674c:	601a      	str	r2, [r3, #0]
+ 8006744:	3b44      	subs	r3, #68	; 0x44
+ 8006746:	edd3 7a00 	vldr	s15, [r3]
+ 800674a:	6c7b      	ldr	r3, [r7, #68]	; 0x44
+ 800674c:	3303      	adds	r3, #3
+ 800674e:	009b      	lsls	r3, r3, #2
+ 8006750:	683a      	ldr	r2, [r7, #0]
+ 8006752:	4413      	add	r3, r2
+ 8006754:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 8006758:	ee17 2a90 	vmov	r2, s15
+ 800675c:	601a      	str	r2, [r3, #0]
 		for (i = 0; i < 3; i++) {
- 800674e:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 8006750:	3301      	adds	r3, #1
- 8006752:	647b      	str	r3, [r7, #68]	; 0x44
- 8006754:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 8006756:	2b02      	cmp	r3, #2
- 8006758:	dde7      	ble.n	800672a <Feature_Extraction_State_1+0x1f2>
+ 800675e:	6c7b      	ldr	r3, [r7, #68]	; 0x44
+ 8006760:	3301      	adds	r3, #1
+ 8006762:	647b      	str	r3, [r7, #68]	; 0x44
+ 8006764:	6c7b      	ldr	r3, [r7, #68]	; 0x44
+ 8006766:	2b02      	cmp	r3, #2
+ 8006768:	dde7      	ble.n	800673a <Feature_Extraction_State_1+0x1f2>
 	for (sample_index = 0; sample_index < MAX_ROTATION_ACQUIRE_CYCLES; sample_index++) {
- 800675a:	6cbb      	ldr	r3, [r7, #72]	; 0x48
- 800675c:	3301      	adds	r3, #1
- 800675e:	64bb      	str	r3, [r7, #72]	; 0x48
- 8006760:	6cbb      	ldr	r3, [r7, #72]	; 0x48
- 8006762:	f5b3 7f96 	cmp.w	r3, #300	; 0x12c
- 8006766:	f6ff af17 	blt.w	8006598 <Feature_Extraction_State_1+0x60>
+ 800676a:	6cbb      	ldr	r3, [r7, #72]	; 0x48
+ 800676c:	3301      	adds	r3, #1
+ 800676e:	64bb      	str	r3, [r7, #72]	; 0x48
+ 8006770:	6cbb      	ldr	r3, [r7, #72]	; 0x48
+ 8006772:	f5b3 7f96 	cmp.w	r3, #300	; 0x12c
+ 8006776:	f6ff af17 	blt.w	80065a8 <Feature_Extraction_State_1+0x60>
 		}
 	}
 
 	HAL_Delay(1000);
- 800676a:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 800676e:	f00d f8bb 	bl	80138e8 <HAL_Delay>
+ 800677a:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+ 800677e:	f00d f8b3 	bl	80138e8 <HAL_Delay>
 	print("\r\nDone.\r\n\r\nYou moved %i degrees.", (int) angle_mag);
- 8006772:	edd7 7a10 	vldr	s15, [r7, #64]	; 0x40
- 8006776:	eefd 7ae7 	vcvt.s32.f32	s15, s15
- 800677a:	ee17 1a90 	vmov	r1, s15
- 800677e:	480f      	ldr	r0, [pc, #60]	; (80067bc <Feature_Extraction_State_1+0x284>)
- 8006780:	f7ff fc3e 	bl	8006000 <print>
+ 8006782:	edd7 7a10 	vldr	s15, [r7, #64]	; 0x40
+ 8006786:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 800678a:	ee17 1a90 	vmov	r1, s15
+ 800678e:	480d      	ldr	r0, [pc, #52]	; (80067c4 <Feature_Extraction_State_1+0x27c>)
+ 8006790:	f7ff fc36 	bl	8006000 <print>
 
 	BSP_LED_Off(LED1);
- 8006784:	2000      	movs	r0, #0
- 8006786:	f00a fb85 	bl	8010e94 <BSP_LED_Off>
-	HAL_Delay(1000);
- 800678a:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 800678e:	f00d f8ab 	bl	80138e8 <HAL_Delay>
-	print("\r\nPrepare for next exercise...");
- 8006792:	480b      	ldr	r0, [pc, #44]	; (80067c0 <Feature_Extraction_State_1+0x288>)
- 8006794:	f7ff fc34 	bl	8006000 <print>
-	HAL_Delay(2000);
- 8006798:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
- 800679c:	f00d f8a4 	bl	80138e8 <HAL_Delay>
+ 8006794:	2000      	movs	r0, #0
+ 8006796:	f00a fb7d 	bl	8010e94 <BSP_LED_Off>
+	HAL_Delay(3000);
+ 800679a:	f640 30b8 	movw	r0, #3000	; 0xbb8
+ 800679e:	f00d f8a3 	bl	80138e8 <HAL_Delay>
 	return;
- 80067a0:	bf00      	nop
+ 80067a2:	bf00      	nop
 }
- 80067a2:	3750      	adds	r7, #80	; 0x50
- 80067a4:	46bd      	mov	sp, r7
- 80067a6:	bdb0      	pop	{r4, r5, r7, pc}
- 80067a8:	00000000 	.word	0x00000000
- 80067ac:	40000000 	.word	0x40000000
- 80067b0:	3c23d70a 	.word	0x3c23d70a
- 80067b4:	08021238 	.word	0x08021238
- 80067b8:	408f4000 	.word	0x408f4000
- 80067bc:	08021254 	.word	0x08021254
- 80067c0:	08021278 	.word	0x08021278
- 80067c4:	00000000 	.word	0x00000000
+ 80067a4:	3750      	adds	r7, #80	; 0x50
+ 80067a6:	46bd      	mov	sp, r7
+ 80067a8:	bdb0      	pop	{r4, r5, r7, pc}
+ 80067aa:	bf00      	nop
+ 80067ac:	f3af 8000 	nop.w
+ 80067b0:	00000000 	.word	0x00000000
+ 80067b4:	40000000 	.word	0x40000000
+ 80067b8:	3c23d70a 	.word	0x3c23d70a
+ 80067bc:	08021260 	.word	0x08021260
+ 80067c0:	408f4000 	.word	0x408f4000
+ 80067c4:	0802127c 	.word	0x0802127c
 
 080067c8 <printOutput_ANN>:
 
@@ -4849,12 +4850,12 @@ void printOutput_ANN(ANN *net, int input_state, int * error) {
  8006ba4:	40000000 	.word	0x40000000
  8006ba8:	cccccccd 	.word	0xcccccccd
  8006bac:	3ff0cccc 	.word	0x3ff0cccc
- 8006bb0:	08021298 	.word	0x08021298
+ 8006bb0:	080212a0 	.word	0x080212a0
  8006bb4:	42c80000 	.word	0x42c80000
- 8006bb8:	080212a8 	.word	0x080212a8
- 8006bbc:	080212d8 	.word	0x080212d8
- 8006bc0:	080212dc 	.word	0x080212dc
- 8006bc4:	080212f4 	.word	0x080212f4
+ 8006bb8:	080212b0 	.word	0x080212b0
+ 8006bbc:	080212e0 	.word	0x080212e0
+ 8006bc0:	080212e4 	.word	0x080212e4
+ 8006bc4:	080212fc 	.word	0x080212fc
  8006bc8:	9999999a 	.word	0x9999999a
  8006bcc:	3fb99999 	.word	0x3fb99999
 
@@ -4994,7 +4995,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
  8006cd8:	f107 0308 	add.w	r3, r7, #8
  8006cdc:	4611      	mov	r1, r2
  8006cde:	6818      	ldr	r0, [r3, #0]
- 8006ce0:	f7ff fc2a 	bl	8006538 <Feature_Extraction_State_1>
+ 8006ce0:	f7ff fc32 	bl	8006548 <Feature_Extraction_State_1>
 
 				print("\r\nAccel %i\t\%i\%i", features[0], features[1], features[2]);
  8006ce4:	f107 03a0 	add.w	r3, r7, #160	; 0xa0
@@ -5262,18 +5263,18 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
  8006f40:	f8c7 3698 	str.w	r3, [r7, #1688]	; 0x698
  8006f44:	e043      	b.n	8006fce <TrainOrientation+0x3fe>
  8006f46:	bf00      	nop
- 8006f48:	08021314 	.word	0x08021314
- 8006f4c:	0802134c 	.word	0x0802134c
- 8006f50:	08021368 	.word	0x08021368
- 8006f54:	08021378 	.word	0x08021378
- 8006f58:	080212d8 	.word	0x080212d8
- 8006f5c:	0802138c 	.word	0x0802138c
+ 8006f48:	0802131c 	.word	0x0802131c
+ 8006f4c:	08021354 	.word	0x08021354
+ 8006f50:	08021370 	.word	0x08021370
+ 8006f54:	08021380 	.word	0x08021380
+ 8006f58:	080212e0 	.word	0x080212e0
+ 8006f5c:	08021394 	.word	0x08021394
  8006f60:	42c80000 	.word	0x42c80000
- 8006f64:	080213a0 	.word	0x080213a0
- 8006f68:	080213a8 	.word	0x080213a8
+ 8006f64:	080213a8 	.word	0x080213a8
+ 8006f68:	080213b0 	.word	0x080213b0
  8006f6c:	66666667 	.word	0x66666667
  8006f70:	51eb851f 	.word	0x51eb851f
- 8006f74:	080213d0 	.word	0x080213d0
+ 8006f74:	080213d8 	.word	0x080213d8
 							run_ann(net, training_dataset[m][k]);
  8006f78:	f507 70f6 	add.w	r0, r7, #492	; 0x1ec
  8006f7c:	f8d7 369c 	ldr.w	r3, [r7, #1692]	; 0x69c
@@ -5420,9 +5421,9 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
  800709c:	f207 67ac 	addw	r7, r7, #1708	; 0x6ac
  80070a0:	46bd      	mov	sp, r7
  80070a2:	bd90      	pop	{r4, r7, pc}
- 80070a4:	080213ec 	.word	0x080213ec
+ 80070a4:	080213f4 	.word	0x080213f4
  80070a8:	20000004 	.word	0x20000004
- 80070ac:	08021400 	.word	0x08021400
+ 80070ac:	08021408 	.word	0x08021408
 
 080070b0 <Accel_Gyro_Sensor_Handler>:
 
@@ -5526,7 +5527,7 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
  800714e:	f107 0310 	add.w	r3, r7, #16
  8007152:	4619      	mov	r1, r3
  8007154:	68b8      	ldr	r0, [r7, #8]
- 8007156:	f7ff f9ef 	bl	8006538 <Feature_Extraction_State_1>
+ 8007156:	f7ff f9f7 	bl	8006548 <Feature_Extraction_State_1>
 
 			for (j = 0; j < 6; j++) {
  800715a:	2300      	movs	r3, #0
@@ -5736,11 +5737,11 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
  80072f4:	f3af 8000 	nop.w
  80072f8:	9999999a 	.word	0x9999999a
  80072fc:	3fb99999 	.word	0x3fb99999
- 8007300:	0802143c 	.word	0x0802143c
- 8007304:	08021450 	.word	0x08021450
- 8007308:	08021454 	.word	0x08021454
+ 8007300:	08021444 	.word	0x08021444
+ 8007304:	08021458 	.word	0x08021458
+ 8007308:	0802145c 	.word	0x0802145c
  800730c:	42c80000 	.word	0x42c80000
- 8007310:	0802146c 	.word	0x0802146c
+ 8007310:	08021474 	.word	0x08021474
 
 08007314 <main>:
 
@@ -6105,8 +6106,8 @@ int main(void) {
  80076a2:	f8c3 2140 	str.w	r2, [r3, #320]	; 0x140
  80076a6:	f507 7313 	add.w	r3, r7, #588	; 0x24c
  80076aa:	e0a5      	b.n	80077f8 <main+0x4e4>
- 80076ac:	0802148c 	.word	0x0802148c
- 80076b0:	080214d0 	.word	0x080214d0
+ 80076ac:	08021494 	.word	0x08021494
+ 80076b0:	080214d8 	.word	0x080214d8
  80076b4:	3f7b9f56 	.word	0x3f7b9f56
  80076b8:	3ef5182b 	.word	0x3ef5182b
  80076bc:	3f6d35a8 	.word	0x3f6d35a8
@@ -6522,7 +6523,7 @@ __attribute__((always_inline)) __STATIC_INLINE void __WFI(void)
  8007ab4:	3f79d495 	.word	0x3f79d495
  8007ab8:	3e028f5c 	.word	0x3e028f5c
  8007abc:	3ecbac71 	.word	0x3ecbac71
- 8007ac0:	08021534 	.word	0x08021534
+ 8007ac0:	0802153c 	.word	0x0802153c
  8007ac4:	3e051eb8 	.word	0x3e051eb8
  8007ac8:	3c23d70a 	.word	0x3c23d70a
  8007acc:	08005ea9 	.word	0x08005ea9
@@ -6531,7 +6532,7 @@ __attribute__((always_inline)) __STATIC_INLINE void __WFI(void)
  8007ad8:	20000750 	.word	0x20000750
  8007adc:	2000072c 	.word	0x2000072c
  8007ae0:	20000730 	.word	0x20000730
- 8007ae4:	080214f8 	.word	0x080214f8
+ 8007ae4:	08021500 	.word	0x08021500
 
 08007ae8 <initializeAllSensors>:
 /**
@@ -8760,7 +8761,7 @@ uint8_t *USBD_VCP_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
  800871c:	46bd      	mov	sp, r7
  800871e:	bd80      	pop	{r7, pc}
  8008720:	20002cfc 	.word	0x20002cfc
- 8008724:	08021540 	.word	0x08021540
+ 8008724:	08021548 	.word	0x08021548
 
 08008728 <USBD_VCP_ManufacturerStrDescriptor>:
   * @param  speed: Current device speed
@@ -8788,7 +8789,7 @@ uint8_t *USBD_VCP_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
  8008744:	46bd      	mov	sp, r7
  8008746:	bd80      	pop	{r7, pc}
  8008748:	20002cfc 	.word	0x20002cfc
- 800874c:	08021564 	.word	0x08021564
+ 800874c:	0802156c 	.word	0x0802156c
 
 08008750 <USBD_VCP_SerialStrDescriptor>:
   * @param  speed: Current device speed
@@ -8847,7 +8848,7 @@ uint8_t *USBD_VCP_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
  8008790:	46bd      	mov	sp, r7
  8008792:	bd80      	pop	{r7, pc}
  8008794:	20002cfc 	.word	0x20002cfc
- 8008798:	08021578 	.word	0x08021578
+ 8008798:	08021580 	.word	0x08021580
 
 0800879c <USBD_VCP_InterfaceStrDescriptor>:
   * @param  speed: Current device speed
@@ -8875,7 +8876,7 @@ uint8_t *USBD_VCP_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
  80087b8:	46bd      	mov	sp, r7
  80087ba:	bd80      	pop	{r7, pc}
  80087bc:	20002cfc 	.word	0x20002cfc
- 80087c0:	08021584 	.word	0x08021584
+ 80087c0:	0802158c 	.word	0x0802158c
 
 080087c4 <Get_SerialNum>:
   * @brief  Create the serial number string descriptor 
@@ -9698,7 +9699,7 @@ HTS221_Error_et HTS221_Set_BduMode(void *handle, HTS221_State_et status)
  8008d16:	3710      	adds	r7, #16
  8008d18:	46bd      	mov	sp, r7
  8008d1a:	bd80      	pop	{r7, pc}
- 8008d1c:	08021594 	.word	0x08021594
+ 8008d1c:	0802159c 	.word	0x0802159c
 
 08008d20 <HTS221_Set_Odr>:
 * @param  odr is the output data rate mode.
@@ -9777,7 +9778,7 @@ HTS221_Error_et HTS221_Set_Odr(void *handle, HTS221_Odr_et odr)
  8008d96:	3710      	adds	r7, #16
  8008d98:	46bd      	mov	sp, r7
  8008d9a:	bd80      	pop	{r7, pc}
- 8008d9c:	08021594 	.word	0x08021594
+ 8008d9c:	0802159c 	.word	0x0802159c
 
 08008da0 <HTS221_Get_Odr>:
 * @param  *handle Device handle.
@@ -9847,7 +9848,7 @@ void HTS221_assert_failed(uint8_t* file, uint32_t line)
   /* Infinite loop */
   while (1)
  8008df2:	e7fe      	b.n	8008df2 <HTS221_assert_failed+0x16>
- 8008df4:	08021614 	.word	0x08021614
+ 8008df4:	0802161c 	.word	0x0802161c
 
 08008df8 <HTS221_H_Init>:
  * @param handle the device handle
@@ -16621,7 +16622,7 @@ status_t LSM303AGR_ACC_Get_Acceleration(void *handle, int *buff)
  800b070:	371c      	adds	r7, #28
  800b072:	46bd      	mov	sp, r7
  800b074:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
- 800b078:	08021648 	.word	0x08021648
+ 800b078:	08021650 	.word	0x08021650
 
 0800b07c <LSM303AGR_ACC_W_ODR>:
 * Input          : LSM303AGR_ACC_ODR_t
@@ -17357,7 +17358,7 @@ static DrvStatusTypeDef LSM303AGR_X_Init( DrvContextTypeDef *handle )
  800b47a:	46bd      	mov	sp, r7
  800b47c:	bd80      	pop	{r7, pc}
  800b47e:	bf00      	nop
- 800b480:	080216a8 	.word	0x080216a8
+ 800b480:	080216b0 	.word	0x080216b0
  800b484:	42c80000 	.word	0x42c80000
 
 0800b488 <LSM303AGR_X_DeInit>:
@@ -21101,7 +21102,7 @@ static DrvStatusTypeDef LSM303AGR_M_Get_Axes_Raw( DrvContextTypeDef *handle, int
  800c8ae:	46bd      	mov	sp, r7
  800c8b0:	bd80      	pop	{r7, pc}
  800c8b2:	bf00      	nop
- 800c8b4:	080216ac 	.word	0x080216ac
+ 800c8b4:	080216b4 	.word	0x080216b4
 
 0800c8b8 <LSM6DSM_ACC_GYRO_ReadReg>:
 * Input				: Register Address
@@ -27414,7 +27415,7 @@ static DrvStatusTypeDef LSM6DSM_X_Get_Axes_Raw(DrvContextTypeDef *handle, int16_
  800eb66:	3710      	adds	r7, #16
  800eb68:	46bd      	mov	sp, r7
  800eb6a:	bd80      	pop	{r7, pc}
- 800eb6c:	080216b4 	.word	0x080216b4
+ 800eb6c:	080216bc 	.word	0x080216bc
 
 0800eb70 <LSM6DSM_X_Set_ODR_When_Enabled>:
  * @param odr the functional output data rate to be set
@@ -27917,7 +27918,7 @@ static DrvStatusTypeDef LSM6DSM_G_Get_Axes_Raw(DrvContextTypeDef *handle, int16_
  800ef22:	3710      	adds	r7, #16
  800ef24:	46bd      	mov	sp, r7
  800ef26:	bd80      	pop	{r7, pc}
- 800ef28:	080216b4 	.word	0x080216b4
+ 800ef28:	080216bc 	.word	0x080216bc
 
 0800ef2c <LSM6DSM_G_Set_ODR_When_Enabled>:
  * @param odr the functional output data rate to be set
@@ -31710,7 +31711,7 @@ static DrvStatusTypeDef STC3115_Init( DrvContextTypeDef* handle )
  801029a:	3768      	adds	r7, #104	; 0x68
  801029c:	46bd      	mov	sp, r7
  801029e:	bdb0      	pop	{r4, r5, r7, pc}
- 80102a0:	080216bc 	.word	0x080216bc
+ 80102a0:	080216c4 	.word	0x080216c4
  80102a4:	54a33dd9 	.word	0x54a33dd9
 
 080102a8 <STC3115_DeInit>:
@@ -33754,7 +33755,7 @@ void BSP_LED_Init(Led_TypeDef Led)
  8010e28:	46bd      	mov	sp, r7
  8010e2a:	bd80      	pop	{r7, pc}
  8010e2c:	40021000 	.word	0x40021000
- 8010e30:	080216fc 	.word	0x080216fc
+ 8010e30:	08021704 	.word	0x08021704
  8010e34:	200003e4 	.word	0x200003e4
 
 08010e38 <BSP_LED_On>:
@@ -33813,7 +33814,7 @@ void BSP_LED_On(Led_TypeDef Led)
  8010e88:	46bd      	mov	sp, r7
  8010e8a:	bd80      	pop	{r7, pc}
  8010e8c:	200003e4 	.word	0x200003e4
- 8010e90:	080216fc 	.word	0x080216fc
+ 8010e90:	08021704 	.word	0x08021704
 
 08010e94 <BSP_LED_Off>:
 *            @arg  LED3
@@ -33871,7 +33872,7 @@ void BSP_LED_Off(Led_TypeDef Led)
  8010ee4:	46bd      	mov	sp, r7
  8010ee6:	bd80      	pop	{r7, pc}
  8010ee8:	200003e4 	.word	0x200003e4
- 8010eec:	080216fc 	.word	0x080216fc
+ 8010eec:	08021704 	.word	0x08021704
 
 08010ef0 <Sensor_IO_I2C_Init>:
  * @param  None
@@ -48181,7 +48182,7 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __RBIT(uint32_t value)
         while(READ_BIT(RCC->CR, RCC_CR_HSERDY) != RESET)
  8015f7a:	e010      	b.n	8015f9e <HAL_RCC_OscConfig+0x2ca>
  8015f7c:	40021000 	.word	0x40021000
- 8015f80:	08021704 	.word	0x08021704
+ 8015f80:	0802170c 	.word	0x0802170c
  8015f84:	200003f4 	.word	0x200003f4
         {
           if((HAL_GetTick() - tickstart) > HSE_TIMEOUT_VALUE)
@@ -49338,7 +49339,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  801661a:	bd80      	pop	{r7, pc}
  801661c:	40022000 	.word	0x40022000
  8016620:	40021000 	.word	0x40021000
- 8016624:	08021704 	.word	0x08021704
+ 8016624:	0802170c 	.word	0x0802170c
  8016628:	200003f4 	.word	0x200003f4
 
 0801662c <HAL_RCC_GetSysClockFreq>:
@@ -49625,7 +49626,7 @@ uint32_t HAL_RCC_GetSysClockFreq(void)
  8016810:	4770      	bx	lr
  8016812:	bf00      	nop
  8016814:	40021000 	.word	0x40021000
- 8016818:	0802171c 	.word	0x0802171c
+ 8016818:	08021724 	.word	0x08021724
  801681c:	00f42400 	.word	0x00f42400
  8016820:	007a1200 	.word	0x007a1200
 
@@ -63539,10 +63540,10 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801b92e:	4798      	blx	r3
  801b930:	3601      	adds	r6, #1
  801b932:	e7f2      	b.n	801b91a <__libc_init_array+0x1e>
- 801b934:	08021c60 	.word	0x08021c60
- 801b938:	08021c60 	.word	0x08021c60
- 801b93c:	08021c60 	.word	0x08021c60
- 801b940:	08021c64 	.word	0x08021c64
+ 801b934:	08021c68 	.word	0x08021c68
+ 801b938:	08021c68 	.word	0x08021c68
+ 801b93c:	08021c68 	.word	0x08021c68
+ 801b940:	08021c6c 	.word	0x08021c6c
 
 0801b944 <malloc>:
  801b944:	4b02      	ldr	r3, [pc, #8]	; (801b950 <malloc+0xc>)
@@ -64165,11 +64166,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801befc:	e7ee      	b.n	801bedc <_printf_float+0x2b8>
  801befe:	bf00      	nop
  801bf00:	7fefffff 	.word	0x7fefffff
- 801bf04:	08021764 	.word	0x08021764
- 801bf08:	08021768 	.word	0x08021768
- 801bf0c:	08021770 	.word	0x08021770
- 801bf10:	0802176c 	.word	0x0802176c
- 801bf14:	08021774 	.word	0x08021774
+ 801bf04:	0802176c 	.word	0x0802176c
+ 801bf08:	08021770 	.word	0x08021770
+ 801bf0c:	08021778 	.word	0x08021778
+ 801bf10:	08021774 	.word	0x08021774
+ 801bf14:	0802177c 	.word	0x0802177c
  801bf18:	9a0a      	ldr	r2, [sp, #40]	; 0x28
  801bf1a:	6da3      	ldr	r3, [r4, #88]	; 0x58
  801bf1c:	429a      	cmp	r2, r3
@@ -64660,8 +64661,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801c3a8:	f104 0619 	add.w	r6, r4, #25
  801c3ac:	e7f5      	b.n	801c39a <_printf_i+0x22e>
  801c3ae:	bf00      	nop
- 801c3b0:	08021776 	.word	0x08021776
- 801c3b4:	08021787 	.word	0x08021787
+ 801c3b0:	0802177e 	.word	0x0802177e
+ 801c3b4:	0802178f 	.word	0x0802178f
 
 0801c3b8 <_scanf_float>:
  801c3b8:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -65055,8 +65056,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801c7ca:	2500      	movs	r5, #0
  801c7cc:	e635      	b.n	801c43a <_scanf_float+0x82>
  801c7ce:	bf00      	nop
- 801c7d0:	08021798 	.word	0x08021798
- 801c7d4:	08021c10 	.word	0x08021c10
+ 801c7d0:	080217a0 	.word	0x080217a0
+ 801c7d4:	08021c18 	.word	0x08021c18
 
 0801c7d8 <iprintf>:
  801c7d8:	b40f      	push	{r0, r1, r2, r3}
@@ -65432,8 +65433,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801cb48:	e785      	b.n	801ca56 <_strtod_l+0x1a6>
  801cb4a:	f04f 0c01 	mov.w	ip, #1
  801cb4e:	e7f6      	b.n	801cb3e <_strtod_l+0x28e>
- 801cb50:	08021a54 	.word	0x08021a54
- 801cb54:	080217a0 	.word	0x080217a0
+ 801cb50:	08021a5c 	.word	0x08021a5c
+ 801cb54:	080217a8 	.word	0x080217a8
  801cb58:	7ff00000 	.word	0x7ff00000
  801cb5c:	9b1d      	ldr	r3, [sp, #116]	; 0x74
  801cb5e:	1c59      	adds	r1, r3, #1
@@ -65718,13 +65719,13 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ce38:	f04f 0b00 	mov.w	fp, #0
  801ce3c:	6023      	str	r3, [r4, #0]
  801ce3e:	e789      	b.n	801cd54 <_strtod_l+0x4a4>
- 801ce40:	08021771 	.word	0x08021771
- 801ce44:	080217b4 	.word	0x080217b4
- 801ce48:	08021769 	.word	0x08021769
- 801ce4c:	080218f4 	.word	0x080218f4
- 801ce50:	08021c10 	.word	0x08021c10
- 801ce54:	08021af0 	.word	0x08021af0
- 801ce58:	08021ac8 	.word	0x08021ac8
+ 801ce40:	08021779 	.word	0x08021779
+ 801ce44:	080217bc 	.word	0x080217bc
+ 801ce48:	08021771 	.word	0x08021771
+ 801ce4c:	080218fc 	.word	0x080218fc
+ 801ce50:	08021c18 	.word	0x08021c18
+ 801ce54:	08021af8 	.word	0x08021af8
+ 801ce58:	08021ad0 	.word	0x08021ad0
  801ce5c:	7ff00000 	.word	0x7ff00000
  801ce60:	7ca00000 	.word	0x7ca00000
  801ce64:	7fefffff 	.word	0x7fefffff
@@ -66095,7 +66096,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801d21c:	39500000 	.word	0x39500000
  801d220:	000fffff 	.word	0x000fffff
  801d224:	7fefffff 	.word	0x7fefffff
- 801d228:	080217c8 	.word	0x080217c8
+ 801d228:	080217d0 	.word	0x080217d0
  801d22c:	4631      	mov	r1, r6
  801d22e:	4628      	mov	r0, r5
  801d230:	f002 f93c 	bl	801f4ac <__ratio>
@@ -66442,7 +66443,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801d5ce:	230a      	movs	r3, #10
  801d5d0:	e7ad      	b.n	801d52e <_strtol_l.isra.0+0x5e>
  801d5d2:	bf00      	nop
- 801d5d4:	080217f1 	.word	0x080217f1
+ 801d5d4:	080217f9 	.word	0x080217f9
 
 0801d5d8 <_strtol_r>:
  801d5d8:	f7ff bf7a 	b.w	801d4d0 <_strtol_l.isra.0>
@@ -66872,15 +66873,15 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801da24:	3fc68a28 	.word	0x3fc68a28
  801da28:	509f79fb 	.word	0x509f79fb
  801da2c:	3fd34413 	.word	0x3fd34413
- 801da30:	080218fe 	.word	0x080218fe
- 801da34:	08021915 	.word	0x08021915
+ 801da30:	08021906 	.word	0x08021906
+ 801da34:	0802191d 	.word	0x0802191d
  801da38:	7ff00000 	.word	0x7ff00000
- 801da3c:	080218fa 	.word	0x080218fa
- 801da40:	080218f1 	.word	0x080218f1
- 801da44:	08021775 	.word	0x08021775
+ 801da3c:	08021902 	.word	0x08021902
+ 801da40:	080218f9 	.word	0x080218f9
+ 801da44:	0802177d 	.word	0x0802177d
  801da48:	3ff80000 	.word	0x3ff80000
- 801da4c:	08021af0 	.word	0x08021af0
- 801da50:	08021974 	.word	0x08021974
+ 801da4c:	08021af8 	.word	0x08021af8
+ 801da50:	0802197c 	.word	0x0802197c
  801da54:	6a63      	ldr	r3, [r4, #36]	; 0x24
  801da56:	9a00      	ldr	r2, [sp, #0]
  801da58:	601a      	str	r2, [r3, #0]
@@ -67170,8 +67171,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801dd74:	f8dd a01c 	ldr.w	sl, [sp, #28]
  801dd78:	e04a      	b.n	801de10 <_dtoa_r+0x6d8>
  801dd7a:	bf00      	nop
- 801dd7c:	08021af0 	.word	0x08021af0
- 801dd80:	08021ac8 	.word	0x08021ac8
+ 801dd7c:	08021af8 	.word	0x08021af8
+ 801dd80:	08021ad0 	.word	0x08021ad0
  801dd84:	3ff00000 	.word	0x3ff00000
  801dd88:	40240000 	.word	0x40240000
  801dd8c:	401c0000 	.word	0x401c0000
@@ -67757,9 +67758,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e2fc:	f000 fcf4 	bl	801ece8 <__multadd>
  801e300:	4683      	mov	fp, r0
  801e302:	e7eb      	b.n	801e2dc <_dtoa_r+0xba4>
- 801e304:	08021974 	.word	0x08021974
- 801e308:	08021774 	.word	0x08021774
- 801e30c:	080218f1 	.word	0x080218f1
+ 801e304:	0802197c 	.word	0x0802197c
+ 801e308:	0802177c 	.word	0x0802177c
+ 801e30c:	080218f9 	.word	0x080218f9
 
 0801e310 <std>:
  801e310:	2300      	movs	r3, #0
@@ -67884,7 +67885,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e422:	61a3      	str	r3, [r4, #24]
  801e424:	e7d2      	b.n	801e3cc <__sinit+0xc>
  801e426:	bf00      	nop
- 801e428:	08021760 	.word	0x08021760
+ 801e428:	08021768 	.word	0x08021768
  801e42c:	0801e359 	.word	0x0801e359
 
 0801e430 <__sfp>:
@@ -67939,7 +67940,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e4ae:	603b      	str	r3, [r7, #0]
  801e4b0:	e7ee      	b.n	801e490 <__sfp+0x60>
  801e4b2:	bf00      	nop
- 801e4b4:	08021760 	.word	0x08021760
+ 801e4b4:	08021768 	.word	0x08021768
  801e4b8:	ffff0001 	.word	0xffff0001
 
 0801e4bc <_fwalk_reent>:
@@ -68362,9 +68363,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e8c6:	2750      	movs	r7, #80	; 0x50
  801e8c8:	e713      	b.n	801e6f2 <__gethex+0x12a>
  801e8ca:	bf00      	nop
- 801e8cc:	08021a54 	.word	0x08021a54
- 801e8d0:	08021974 	.word	0x08021974
- 801e8d4:	080219e8 	.word	0x080219e8
+ 801e8cc:	08021a5c 	.word	0x08021a5c
+ 801e8d0:	0802197c 	.word	0x0802197c
+ 801e8d4:	080219f0 	.word	0x080219f0
  801e8d8:	9b15      	ldr	r3, [sp, #84]	; 0x54
  801e8da:	2b00      	cmp	r3, #0
  801e8dc:	d1eb      	bne.n	801e8b6 <__gethex+0x2ee>
@@ -68508,7 +68509,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ea4a:	42b0      	cmp	r0, r6
  801ea4c:	dbe7      	blt.n	801ea1e <__gethex+0x456>
  801ea4e:	e7f0      	b.n	801ea32 <__gethex+0x46a>
- 801ea50:	08021974 	.word	0x08021974
+ 801ea50:	0802197c 	.word	0x0802197c
 
 0801ea54 <L_shift>:
  801ea54:	f1c2 0208 	rsb	r2, r2, #8
@@ -68773,8 +68774,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ec94:	e9c0 3303 	strd	r3, r3, [r0, #12]
  801ec98:	e7f7      	b.n	801ec8a <_Balloc+0x66>
  801ec9a:	bf00      	nop
- 801ec9c:	080218fe 	.word	0x080218fe
- 801eca0:	08021a68 	.word	0x08021a68
+ 801ec9c:	08021906 	.word	0x08021906
+ 801eca0:	08021a70 	.word	0x08021a70
 
 0801eca4 <_Bfree>:
  801eca4:	b570      	push	{r4, r5, r6, lr}
@@ -68802,8 +68803,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ecd8:	6021      	str	r1, [r4, #0]
  801ecda:	f843 4022 	str.w	r4, [r3, r2, lsl #2]
  801ecde:	bd70      	pop	{r4, r5, r6, pc}
- 801ece0:	080218fe 	.word	0x080218fe
- 801ece4:	08021a68 	.word	0x08021a68
+ 801ece0:	08021906 	.word	0x08021906
+ 801ece4:	08021a70 	.word	0x08021a70
 
 0801ece8 <__multadd>:
  801ece8:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
@@ -68859,8 +68860,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ed6c:	4620      	mov	r0, r4
  801ed6e:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
  801ed72:	bf00      	nop
- 801ed74:	08021974 	.word	0x08021974
- 801ed78:	08021a68 	.word	0x08021a68
+ 801ed74:	0802197c 	.word	0x0802197c
+ 801ed78:	08021a70 	.word	0x08021a70
 
 0801ed7c <__s2b>:
  801ed7c:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -68921,8 +68922,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ee00:	f7ff ff72 	bl	801ece8 <__multadd>
  801ee04:	e7ee      	b.n	801ede4 <__s2b+0x68>
  801ee06:	bf00      	nop
- 801ee08:	08021974 	.word	0x08021974
- 801ee0c:	08021a68 	.word	0x08021a68
+ 801ee08:	0802197c 	.word	0x0802197c
+ 801ee0c:	08021a70 	.word	0x08021a70
 
 0801ee10 <__hi0bits>:
  801ee10:	0c03      	lsrs	r3, r0, #16
@@ -69016,8 +69017,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801eece:	6103      	str	r3, [r0, #16]
  801eed0:	bd10      	pop	{r4, pc}
  801eed2:	bf00      	nop
- 801eed4:	08021974 	.word	0x08021974
- 801eed8:	08021a68 	.word	0x08021a68
+ 801eed4:	0802197c 	.word	0x0802197c
+ 801eed8:	08021a70 	.word	0x08021a70
 
 0801eedc <__multiply>:
  801eedc:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -69137,8 +69138,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f01a:	3f01      	subs	r7, #1
  801f01c:	e7a1      	b.n	801ef62 <__multiply+0x86>
  801f01e:	bf00      	nop
- 801f020:	08021974 	.word	0x08021974
- 801f024:	08021a68 	.word	0x08021a68
+ 801f020:	0802197c 	.word	0x0802197c
+ 801f024:	08021a70 	.word	0x08021a70
 
 0801f028 <__pow5mult>:
  801f028:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -69206,9 +69207,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f0c8:	4638      	mov	r0, r7
  801f0ca:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
  801f0ce:	bf00      	nop
- 801f0d0:	08021bb8 	.word	0x08021bb8
- 801f0d4:	080218fe 	.word	0x080218fe
- 801f0d8:	08021a68 	.word	0x08021a68
+ 801f0d0:	08021bc0 	.word	0x08021bc0
+ 801f0d4:	08021906 	.word	0x08021906
+ 801f0d8:	08021a70 	.word	0x08021a70
 
 0801f0dc <__lshift>:
  801f0dc:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -69287,8 +69288,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f1a6:	d8f9      	bhi.n	801f19c <__lshift+0xc0>
  801f1a8:	e7ea      	b.n	801f180 <__lshift+0xa4>
  801f1aa:	bf00      	nop
- 801f1ac:	08021974 	.word	0x08021974
- 801f1b0:	08021a68 	.word	0x08021a68
+ 801f1ac:	0802197c 	.word	0x0802197c
+ 801f1b0:	08021a70 	.word	0x08021a70
 
 0801f1b4 <__mcmp>:
  801f1b4:	b530      	push	{r4, r5, lr}
@@ -69413,8 +69414,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f2ee:	e7e0      	b.n	801f2b2 <__mdiff+0xc6>
  801f2f0:	3e01      	subs	r6, #1
  801f2f2:	e7ea      	b.n	801f2ca <__mdiff+0xde>
- 801f2f4:	08021974 	.word	0x08021974
- 801f2f8:	08021a68 	.word	0x08021a68
+ 801f2f4:	0802197c 	.word	0x0802197c
+ 801f2f8:	08021a70 	.word	0x08021a70
 
 0801f2fc <__ulp>:
  801f2fc:	b082      	sub	sp, #8
@@ -69570,8 +69571,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f49a:	f7ff fcb9 	bl	801ee10 <__hi0bits>
  801f49e:	ebc0 1042 	rsb	r0, r0, r2, lsl #5
  801f4a2:	e7df      	b.n	801f464 <__d2b+0x70>
- 801f4a4:	08021974 	.word	0x08021974
- 801f4a8:	08021a68 	.word	0x08021a68
+ 801f4a4:	0802197c 	.word	0x0802197c
+ 801f4a8:	08021a70 	.word	0x08021a70
 
 0801f4ac <__ratio>:
  801f4ac:	e92d 4ff7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -69961,11 +69962,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f854:	f7fc fc8a 	bl	801c16c <_printf_i>
  801f858:	e7eb      	b.n	801f832 <_svfiprintf_r+0x1c2>
  801f85a:	bf00      	nop
- 801f85c:	08021bc4 	.word	0x08021bc4
- 801f860:	08021bce 	.word	0x08021bce
+ 801f85c:	08021bcc 	.word	0x08021bcc
+ 801f860:	08021bd6 	.word	0x08021bd6
  801f864:	0801bc25 	.word	0x0801bc25
  801f868:	0801f5b9 	.word	0x0801f5b9
- 801f86c:	08021bca 	.word	0x08021bca
+ 801f86c:	08021bd2 	.word	0x08021bd2
 
 0801f870 <__sfputc_r>:
  801f870:	6893      	ldr	r3, [r2, #8]
@@ -70248,14 +70249,14 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fafc:	f7fc fb36 	bl	801c16c <_printf_i>
  801fb00:	e7e4      	b.n	801facc <_vfiprintf_r+0x208>
  801fb02:	bf00      	nop
- 801fb04:	080219a8 	.word	0x080219a8
- 801fb08:	080219c8 	.word	0x080219c8
- 801fb0c:	08021988 	.word	0x08021988
- 801fb10:	08021bc4 	.word	0x08021bc4
- 801fb14:	08021bce 	.word	0x08021bce
+ 801fb04:	080219b0 	.word	0x080219b0
+ 801fb08:	080219d0 	.word	0x080219d0
+ 801fb0c:	08021990 	.word	0x08021990
+ 801fb10:	08021bcc 	.word	0x08021bcc
+ 801fb14:	08021bd6 	.word	0x08021bd6
  801fb18:	0801bc25 	.word	0x0801bc25
  801fb1c:	0801f89f 	.word	0x0801f89f
- 801fb20:	08021bca 	.word	0x08021bca
+ 801fb20:	08021bd2 	.word	0x08021bd2
  801fb24:	00000000 	.word	0x00000000
 
 0801fb28 <nan>:
@@ -70415,9 +70416,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fc74:	f04f 37ff 	mov.w	r7, #4294967295
  801fc78:	e7ea      	b.n	801fc50 <__swbuf_r+0x6c>
  801fc7a:	bf00      	nop
- 801fc7c:	080219a8 	.word	0x080219a8
- 801fc80:	080219c8 	.word	0x080219c8
- 801fc84:	08021988 	.word	0x08021988
+ 801fc7c:	080219b0 	.word	0x080219b0
+ 801fc80:	080219d0 	.word	0x080219d0
+ 801fc84:	08021990 	.word	0x08021990
 
 0801fc88 <__ascii_wctomb>:
  801fc88:	b149      	cbz	r1, 801fc9e <__ascii_wctomb+0x16>
@@ -70542,9 +70543,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fd90:	e7f7      	b.n	801fd82 <__swsetup_r+0xba>
  801fd92:	bf00      	nop
  801fd94:	2000050c 	.word	0x2000050c
- 801fd98:	080219a8 	.word	0x080219a8
- 801fd9c:	080219c8 	.word	0x080219c8
- 801fda0:	08021988 	.word	0x08021988
+ 801fd98:	080219b0 	.word	0x080219b0
+ 801fd9c:	080219d0 	.word	0x080219d0
+ 801fda0:	08021990 	.word	0x08021990
 
 0801fda4 <__assert_func>:
  801fda4:	b51f      	push	{r0, r1, r2, r3, r4, lr}
@@ -70567,9 +70568,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fdcc:	e7f3      	b.n	801fdb6 <__assert_func+0x12>
  801fdce:	bf00      	nop
  801fdd0:	2000050c 	.word	0x2000050c
- 801fdd4:	08021bd5 	.word	0x08021bd5
- 801fdd8:	08021be2 	.word	0x08021be2
- 801fddc:	08021c10 	.word	0x08021c10
+ 801fdd4:	08021bdd 	.word	0x08021bdd
+ 801fdd8:	08021bea 	.word	0x08021bea
+ 801fddc:	08021c18 	.word	0x08021c18
 
 0801fde0 <_close_r>:
  801fde0:	b538      	push	{r3, r4, r5, lr}
@@ -70761,9 +70762,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ff72:	bf08      	it	eq
  801ff74:	68ec      	ldreq	r4, [r5, #12]
  801ff76:	e7da      	b.n	801ff2e <_fflush_r+0x22>
- 801ff78:	080219a8 	.word	0x080219a8
- 801ff7c:	080219c8 	.word	0x080219c8
- 801ff80:	08021988 	.word	0x08021988
+ 801ff78:	080219b0 	.word	0x080219b0
+ 801ff7c:	080219d0 	.word	0x080219d0
+ 801ff80:	08021990 	.word	0x08021990
 
 0801ff84 <fiprintf>:
  801ff84:	b40e      	push	{r1, r2, r3}
@@ -71449,7 +71450,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  8020600:	8800759c 	.word	0x8800759c
  8020604:	7e37e43c 	.word	0x7e37e43c
  8020608:	7ff00000 	.word	0x7ff00000
- 802060c:	08021c10 	.word	0x08021c10
+ 802060c:	08021c18 	.word	0x08021c18
  8020610:	433fffff 	.word	0x433fffff
  8020614:	3ff00000 	.word	0x3ff00000
  8020618:	3fefffff 	.word	0x3fefffff
@@ -71925,11 +71926,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  8020b2c:	43400000 	.word	0x43400000
  8020b30:	0003988e 	.word	0x0003988e
  8020b34:	000bb679 	.word	0x000bb679
- 8020b38:	08021c18 	.word	0x08021c18
+ 8020b38:	08021c20 	.word	0x08021c20
  8020b3c:	3ff00000 	.word	0x3ff00000
  8020b40:	40080000 	.word	0x40080000
- 8020b44:	08021c38 	.word	0x08021c38
- 8020b48:	08021c28 	.word	0x08021c28
+ 8020b44:	08021c40 	.word	0x08021c40
+ 8020b48:	08021c30 	.word	0x08021c30
  8020b4c:	a3b5      	add	r3, pc, #724	; (adr r3, 8020e24 <__ieee754_pow+0xa3c>)
  8020b4e:	e9d3 2300 	ldrd	r2, r3, [r3]
  8020b52:	4640      	mov	r0, r8
@@ -72431,7 +72432,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  80210be:	fa44 f202 	asrne.w	r2, r4, r2
  80210c2:	ea41 0402 	orrne.w	r4, r1, r2
  80210c6:	e7cd      	b.n	8021064 <rint+0xa8>
- 80210c8:	08021c48 	.word	0x08021c48
+ 80210c8:	08021c50 	.word	0x08021c50
  80210cc:	000fffff 	.word	0x000fffff
 
 080210d0 <scalbn>:

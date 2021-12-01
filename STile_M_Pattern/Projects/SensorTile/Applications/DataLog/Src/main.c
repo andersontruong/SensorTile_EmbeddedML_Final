@@ -275,11 +275,14 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	int axis_index;
 	float accel_mag;
 
+	print("\r\nPrepare for new exercise motion...");
+	HAL_Delay(1000);
 	print("\r\nMove to Start Position...");
 	HAL_Delay(START_POSITION_INTERVAL);
 
 	// Acquire acceleration values before motion
 	getAccel(handle, ttt_initial);
+
 	print("\r\nDone.\n");
 
 	// Prompt First Motion
@@ -289,6 +292,7 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	HAL_Delay(2000);
 
 	print("\r\nDone.\n");
+
 	HAL_Delay(1000);
 
 	// Acquire acceleration values after motion
@@ -296,9 +300,10 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 
 	// Compute Magnitude of Acceleration
 	for (axis_index = 0; axis_index < 3; axis_index++) {
-		accel_mag = pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
+		accel_mag += pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
 	}
 
+	//
 	accel_mag = sqrt(accel_mag);
 
 	for (i = 0; i < 3; i++) {
@@ -414,9 +419,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 	print("\r\nDone.\r\n\r\nYou moved %i degrees.", (int) angle_mag);
 
 	BSP_LED_Off(LED1);
-	HAL_Delay(1000);
-	print("\r\nPrepare for next exercise...");
-	HAL_Delay(2000);
+	HAL_Delay(3000);
 	return;
 }
 

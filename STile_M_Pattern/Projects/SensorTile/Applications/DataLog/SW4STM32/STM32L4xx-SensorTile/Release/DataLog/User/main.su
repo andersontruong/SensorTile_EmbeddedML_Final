@@ -6,7 +6,7 @@ main.c:212:6:LED_Notification_Blink	24	static
 main.c:228:6:getAccel	32	static
 main.c:249:6:getAngularVelocity	32	static
 main.c:271:6:Feature_Extraction_State_0	56	static
-main.c:317:6:Feature_Extraction_State_1	96	static
+main.c:319:6:Feature_Extraction_State_1	96	static
 main.c:423:6:printOutput_ANN	80	static
 main.c:515:6:TrainOrientation	1720	static
 main.c:669:5:Accel_Gyro_Sensor_Handler	144	static
