@@ -46,6 +46,7 @@
 #include <string.h> /* strlen */
 #include <stdio.h>  /* sprintf */
 #include <math.h>   /* trunc */
+#include <stdarg.h> // for print
 #include "embeddedML.h"
 #include "main.h"
 
@@ -112,6 +113,17 @@ static void initializeAllSensors(void);
 
 static volatile uint8_t hasTrained = 0;
 unsigned int training_cycles = TRAINING_CYCLES;
+
+void ezprint(char *format[], ...) {
+	char buffer[128];
+	va_list args;
+	va_start(args, format);
+
+	vsprintf(buffer, format, args);
+	va_end(args);
+
+	CDC_Fill_Buffer((uint8_t *) buffer, strlen(buffer));
+}
 
 void stable_softmax(float *x, float *y) {
 	int size = 3;
@@ -257,13 +269,11 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  */
 
 void Feature_Extraction_State_0(void *handle,
-								int *ttt_1,
-								int *ttt_2,
-								int *ttt_3,
-								int *ttt_mag_scale) {
+								int *features[]) {
 
 	int ttt_initial[3]; // Base State Acceleration
 	int ttt[3]; // State Acceleration
+	int i; // Indexing Number
 	int axis_index;
 	float accel_mag;
 	char msg[128];
@@ -291,11 +301,11 @@ void Feature_Extraction_State_0(void *handle,
 	}
 
 	accel_mag = sqrt(accel_mag);
-	*ttt_mag_scale = (int)(accel_mag);
+	//*ttt_mag_scale = (int)(accel_mag);
 
-	*ttt_1 = ttt[0] - ttt_initial[0];
-	*ttt_2 = ttt[1] - ttt_initial[1];
-	*ttt_3 = ttt[2] - ttt_initial[1];
+	for (i = 0; i < 3; i++) {
+		*(features + i) = ttt[i] - ttt_initial[i];
+	}
 
 	BSP_LED_Off(LED1);
 	return;
@@ -305,10 +315,10 @@ void Feature_Extraction_State_0(void *handle,
  * Feature_Extraction_State_1() determines a second orientation after
  * the action of Feature_Extraction_State_0().
  */
-void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * ttt_3, int * ttt_mag_scale) {
+void Feature_Extraction_State_1(void *handle_g, int *features[]) {
 	int ttt[3], ttt_initial[3], ttt_offset[3];
 	char msg1[128];
-	int axis_index, sample_index;
+	int axis_index, sample_index, i; // Indexing Numbers
 	float rotate_angle[3];
 	float angle_mag;
 	float Tsample;
@@ -370,19 +380,12 @@ void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * 
 		for (axis_index = 0; axis_index < 3; axis_index++) {
 			ttt[axis_index] = ttt[axis_index] - ttt_offset[axis_index];
 		}
-		/*
-		* Suppress value of Z-Axis rotation signals
-		*/
-		//ttt_initial[2] = 0;
-		//ttt[2] = 0;
-		/*
-		* Compute rotation angles by integration
-		*/
+
+		// Compute rotation angles by integration
 		for (axis_index = 0; axis_index < 3; axis_index++) {
 			rotate_angle[axis_index] = rotate_angle[axis_index] + (float)((ttt_initial[axis_index] + ttt[axis_index]) * Tsample / 2);
 		}
 		/*
-		*
 		*
 		* Compute magnitude of rotational angle summing over X and Y
 		* axis Rotation Rates.
@@ -406,17 +409,16 @@ void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * 
 		if (angle_mag >= ANGLE_MAG_MAX_THRESHOLD) {
 			break;
 		}
-		*ttt_1 = rotate_angle[0];
-		*ttt_2 = rotate_angle[1];
-		*ttt_3 = rotate_angle[2];
+
+		for (i = 0; i < 3; i++) {
+			*(features + i + 3) = (int) rotate_angle[i];
+		}
 	}
 
-	*ttt_mag_scale = (int) (angle_mag * 100);
-	sprintf(msg1, " \r\n");
-	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-	sprintf(msg1, "\r\nMotion with Angle Mag of %i degrees complete.\nNow Return to Next Start Position, ",
+	sprintf(msg1, "\r\n\r\nMotion with Angle Mag of %i degrees complete.\nNow Return to Next Start Position, ",
 			(int) angle_mag);
 	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+
 	BSP_LED_Off(LED1);
 	HAL_Delay(3000);
 	return;
@@ -535,6 +537,8 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 	int i, j, k, m, n, r;
 	int error, net_error;
 
+	int features[6];
+
 	int ttt_1, ttt_2, ttt_3, ttt_mag_scale; // First three features and their total magnitude
 	int rrr_1, rrr_2, rrr_3, rrr_mag_scale; // Second three features and their total magnitude
 
@@ -579,27 +583,21 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 				sprintf(msg1, "\r\nMove to Orientation %i on LED On", i+1);
 				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3, &ttt_mag_scale);
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3, &rrr_mag_scale);
+				Feature_Extraction_State_0(handle, &features);
+				Feature_Extraction_State_1(handle_g, &features);
 
-				sprintf(msg1, "\r\nAccel %i\t\%i\%i", ttt_1, ttt_2, ttt_3);
+				sprintf(msg1, "\r\nAccel %i\t\%i\%i", features[0], features[1], features[2]);
 				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 
-				XYZ[0] = (float) ttt_1;
-				XYZ[1] = (float) ttt_2;
-				XYZ[2] = (float) ttt_3;
-				XYZ[3] = (float) rrr_1;
-				XYZ[4] = (float) rrr_2;
-				XYZ[5] = (float) rrr_3;
+				for (j = 0; j < 6; j++) {
+					XYZ[j] = (float) features[j];
+				}
 
 				motion_softmax(net->topology[0], XYZ, xyz);
 
-				training_dataset[i][k][0] = xyz[0];
-				training_dataset[i][k][1] = xyz[1];
-				training_dataset[i][k][2] = xyz[2];
-				training_dataset[i][k][3] = xyz[3];
-				training_dataset[i][k][4] = xyz[4];
-				training_dataset[i][k][5] = xyz[5];
+				for (j = 0; j < 6; j++) {
+					training_dataset[i][k][j] = xyz[j];
+				}
 
 				int o;
 				for (o = 0; o < 6; o++) {
@@ -730,8 +728,7 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 	float XYZ[6];
 	float point;
 	int i, j, k, loc;
-	int ttt_1, ttt_2, ttt_3, ttt_mag_scale;
-	int rrr_1, rrr_2, rrr_3, rrr_mag_scale;
+	int features[6];
 	char msg1[128];
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
@@ -762,18 +759,13 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 			HAL_Delay(START_POSITION_INTERVAL);
 
-			Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-					&ttt_mag_scale);
+			Feature_Extraction_State_0(handle, &features);
 
-			Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-					&rrr_mag_scale);
+			Feature_Extraction_State_1(handle_g, &features);
 
-            XYZ[0] = (float) ttt_1;
-            XYZ[1] = (float) ttt_2;
-            XYZ[2] = (float) ttt_3;
-            XYZ[3] = (float) rrr_1;
-			XYZ[4] = (float) rrr_2;
-			XYZ[5] = (float) rrr_3;
+			for (i = 0; i < 6; i++) {
+				XYZ[i] = (float) features[i];
+			}
 
 			motion_softmax(net->topology[0], XYZ, xyz);
 
@@ -809,7 +801,7 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				LED_Code_Blink(loc + 1);
 			}
 
-			sprintf(msg1, "\n\rNeural Network Classification - Motion %i", loc);
+			sprintf(msg1, "\n\rNeural Network Classification - Motion %i", loc + 1);
 			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 
 		k = k + 1;
@@ -882,10 +874,10 @@ int main(void) {
 
 	/* Notify user */
 
-	sprintf(msg2, "\n\rEmbeddedML Motion Pattern Classification\r\n");
+	sprintf(msg2, "\n\rEmbeddedML Physical Therapy Two-Motion Exercise Classification\r\n");
 	CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
 
-	sprintf(msg2, "\n\rDouble Tap to start training");
+	sprintf(msg2, "\n\rDOUBLE TAP to start recording motions");
 	CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
 
 	//---EMBEDDED ANN---
@@ -964,7 +956,7 @@ int main(void) {
 				 * Upon return from Accel_Gyro_Sensor_Handler, initiate retraining.
 				 */
 				hasTrained = 0;
-				sprintf(msg2, "\n\r\n\rDouble Tap to start a new training session");
+				sprintf(msg2, "\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises");
 				CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
 			}
 
