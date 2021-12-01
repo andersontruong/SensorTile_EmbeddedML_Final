@@ -1,5 +1,5 @@
 DataLog/User/stm32l4xx_it.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/stm32l4xx_it.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/stm32l4xx_it.c \
  ../../../Inc/stm32l4xx_it.h ../../../Inc/usbd_cdc_interface.h \
  ../../../../../../../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
  ../../../../../../../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \

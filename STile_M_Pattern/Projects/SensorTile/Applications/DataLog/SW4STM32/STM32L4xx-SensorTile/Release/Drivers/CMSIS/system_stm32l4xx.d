@@ -1,5 +1,5 @@
 Drivers/CMSIS/system_stm32l4xx.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/system_stm32l4xx.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/system_stm32l4xx.c \
  ../../../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h \
  ../../../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l476xx.h \
  ../../../../../../../Drivers/CMSIS/Include/core_cm4.h \

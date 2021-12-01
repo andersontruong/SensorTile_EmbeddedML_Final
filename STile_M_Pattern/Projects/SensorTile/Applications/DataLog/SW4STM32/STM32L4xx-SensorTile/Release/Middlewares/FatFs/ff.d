@@ -1,7 +1,7 @@
 Middlewares/FatFs/ff.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h \
  ../../../Inc/ffconf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
@@ -48,11 +48,11 @@ Middlewares/FatFs/ff.o: \
  ../../../../../../../Drivers/BSP/Components/Common/sensor.h \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h:
 
 ../../../Inc/ffconf.h:
 
@@ -146,4 +146,4 @@ C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/T
 
 ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h:

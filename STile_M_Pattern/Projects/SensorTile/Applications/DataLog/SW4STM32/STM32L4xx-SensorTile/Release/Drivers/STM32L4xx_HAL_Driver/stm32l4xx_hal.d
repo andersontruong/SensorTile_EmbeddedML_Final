@@ -1,5 +1,5 @@
 Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \

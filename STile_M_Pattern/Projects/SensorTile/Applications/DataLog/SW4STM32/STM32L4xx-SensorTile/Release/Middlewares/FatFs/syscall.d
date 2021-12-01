@@ -1,7 +1,7 @@
 Middlewares/FatFs/syscall.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/option/syscall.c \
- c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\middlewares\third_party\fatfs\src\ff.h \
- c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\middlewares\third_party\fatfs\src\integer.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/option/syscall.c \
+ c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\middlewares\third_party\fatfs\src\ff.h \
+ c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\middlewares\third_party\fatfs\src\integer.h \
  ../../../Inc/ffconf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
@@ -49,9 +49,9 @@ Middlewares/FatFs/syscall.o: \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h
 
-c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\middlewares\third_party\fatfs\src\ff.h:
+c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\middlewares\third_party\fatfs\src\ff.h:
 
-c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\middlewares\third_party\fatfs\src\integer.h:
+c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\middlewares\third_party\fatfs\src\integer.h:
 
 ../../../Inc/ffconf.h:
 

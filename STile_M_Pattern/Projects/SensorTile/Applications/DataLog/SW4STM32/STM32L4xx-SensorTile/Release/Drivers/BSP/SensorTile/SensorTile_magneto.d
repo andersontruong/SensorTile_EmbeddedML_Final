@@ -1,13 +1,13 @@
 Drivers/BSP/SensorTile/SensorTile_magneto.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.h \
  ../../../../../../../Drivers/BSP/Components/lsm303agr/LSM303AGR_MAG_driver_HL.h \
  ../../../../../../../Drivers/BSP/Components/Common/magnetometer.h \
  ../../../../../../../Drivers/BSP/Components/Common/sensor.h \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/lsm303agr/LSM303AGR_MAG_driver.h \
  ../../../../../../../Drivers/BSP/Components/lsm303agr/LSM303AGR_Combo_driver_HL.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -50,7 +50,7 @@ Drivers/BSP/SensorTile/SensorTile_magneto.o: \
  ../../../../../../../Drivers/BSP/Components/Common/accelerometer.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_magneto.h:
 
 ../../../../../../../Drivers/BSP/Components/lsm303agr/LSM303AGR_MAG_driver_HL.h:
 
@@ -64,7 +64,7 @@ C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/S
 
 ../../../../../../../Drivers/BSP/Components/lsm303agr/LSM303AGR_Combo_driver_HL.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
 
 ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 

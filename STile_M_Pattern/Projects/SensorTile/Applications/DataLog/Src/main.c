@@ -71,6 +71,7 @@
 #define TRAINING_CYCLES 2000
 #define LED_BLINK_INTERVAL 200
 
+// Change for Angle Threshold
 #define ANGLE_MAG_MAX_THRESHOLD 90
 #define MAX_ROTATION_ACQUIRE_CYCLES 400
 
@@ -213,9 +214,8 @@ void LED_Notification_Blink(int count) {
 }
 
 void getAccel(void *handle, int *xyz) {
-	uint8_t id;
+	uint8_t status, id;
 	SensorAxes_t acceleration;
-	uint8_t status;
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
 
@@ -235,9 +235,9 @@ void getAccel(void *handle, int *xyz) {
 }
 
 void getAngularVelocity(void *handle_g, int *xyz) {
-	uint8_t id;
+	uint8_t id, status;
+
 	SensorAxes_t angular_velocity;
-	uint8_t status;
 	BSP_GYRO_Get_Instance(handle_g, &id);
 	BSP_GYRO_IsInitialized(handle_g, &status);
 	if (status == 1) {
@@ -256,23 +256,23 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  * Note : Feature_Extraction_State_0() sets Z-axis acceleration, ttt_3 = 0
  */
 
-void Feature_Extraction_State_0(void *handle, int * ttt_1, int * ttt_2,
-		int * ttt_3, int * ttt_mag_scale) {
+void Feature_Extraction_State_0(void *handle,
+								int *ttt_1,
+								int *ttt_2,
+								int *ttt_3,
+								int *ttt_mag_scale) {
 
-	int ttt[3];
-	int ttt_initial[3];
+	int ttt_initial[3]; // Base State Acceleration
+	int ttt[3]; // State Acceleration
 	int axis_index;
 	float accel_mag;
-	char  msg[128];
+	char msg[128];
 
-
-	/*
-	 * Acquire acceleration values prior to motion
-	 */
-
+	// Acquire acceleration values before motion
 	getAccel(handle, ttt_initial);
 
-	sprintf(msg, "\r\nStart Motion to new Orientation when LED On");
+	// Prompt First Motion
+	sprintf(msg, "\r\nStart First Motion when LED On");
 	CDC_Fill_Buffer((uint8_t *) msg, strlen(msg));
 	BSP_LED_On(LED1);
 
@@ -282,19 +282,20 @@ void Feature_Extraction_State_0(void *handle, int * ttt_1, int * ttt_2,
 	CDC_Fill_Buffer((uint8_t *) msg, strlen(msg));
 	HAL_Delay(1000);
 
+	// Acquire acceleration values after motion
 	getAccel(handle, ttt);
 
-
-	accel_mag = 0;
-		for (axis_index = 0; axis_index < 3; axis_index++) {
-			accel_mag = accel_mag + pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
-		}
+	// Compute Magnitude of Acceleration
+	for (axis_index = 0; axis_index < 3; axis_index++) {
+		accel_mag = pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
+	}
 
 	accel_mag = sqrt(accel_mag);
+	*ttt_mag_scale = (int)(accel_mag);
+
 	*ttt_1 = ttt[0] - ttt_initial[0];
 	*ttt_2 = ttt[1] - ttt_initial[1];
 	*ttt_3 = ttt[2] - ttt_initial[1];
-	*ttt_mag_scale = (int)(accel_mag);
 
 	BSP_LED_Off(LED1);
 	return;
@@ -305,19 +306,12 @@ void Feature_Extraction_State_0(void *handle, int * ttt_1, int * ttt_2,
  * the action of Feature_Extraction_State_0().
  */
 void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * ttt_3, int * ttt_mag_scale) {
-	int ttt[3], ttt_state_0[3], ttt_initial[3], ttt_offset[3];
+	int ttt[3], ttt_initial[3], ttt_offset[3];
 	char msg1[128];
 	int axis_index, sample_index;
 	float rotate_angle[3];
-	float angle_mag, angle_mag_max_threshold;
+	float angle_mag;
 	float Tsample;
-	/*
-	* Assign the initial values provided by execution of State 0 in
-	* ttt_1 and ttt_2
-	*/
-	ttt_state_0[0] = *ttt_1;
-	ttt_state_0[1] = *ttt_2;
-	angle_mag_max_threshold = ANGLE_MAG_MAX_THRESHOLD;
 	/*
 	* Compute sample period with scaling from milliseconds
 	* to seconds
@@ -353,7 +347,7 @@ void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * 
 	/*
 	* Notify user to initiate motion
 	*/
-	sprintf(msg1, "\r\nStart Second State Motion to New Orientation when LED On");
+	sprintf(msg1, "\r\nStart Second Motion when LED On");
 	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 	BSP_LED_On(LED1);
 	for (sample_index = 0; sample_index < MAX_ROTATION_ACQUIRE_CYCLES; sample_index++) {
@@ -409,59 +403,19 @@ void Feature_Extraction_State_1(void *handle_g, int * ttt_1, int * ttt_2, int * 
 		 /*
 		* Compute rotation angle magnitude
 		*/
-		if (angle_mag >= angle_mag_max_threshold) {
+		if (angle_mag >= ANGLE_MAG_MAX_THRESHOLD) {
 			break;
 		}
 		*ttt_1 = rotate_angle[0];
 		*ttt_2 = rotate_angle[1];
 		*ttt_3 = rotate_angle[2];
 	}
-	/*
-	* The loop above will exit under two conditions:
-	*
-	* 1) The SensorTile has not been moved over a period determined by
-	* MAX_ROTATION_ACQUIRE_CYCLES. Each loop cycle requires 10 milliseconds
-	* set by the integration interval of DATA_PERIOD_MS. Thus, this is a
-	* period of 4 seconds
-	* 2) The SensorTile has been moved to introduce an orientation angle
-	* change of greater than or equal to angle_mag_max_threshold.
-	*
-	* Thus, this system detects whether in State 1, there is a change
-	* in orientation after State 0 or there is no change in orientation.
-	*
-	* Assignment of features including for the third feature, *ttt_3.
-	*
-	* Consider a method similar to that of the Project of Tutorial 12
-	*
-	* Specifically, if angle_mag is greater than or equal to a threshold value
-	* then *ttt_3 is sent to the average of *ttt_1 and *ttt_2
-	*
-	* And if angle_mag is less than a threshold value, then *ttt_3 is set
-	* to zero
-	*
-	* Please also note that the loop above exits when angle_mag is equal to
-	* angle_mag_max_threshold. Therefore, angle_mag will not exceed this
-	* value. So, the threshold value for setting *ttt_3 should be chosen
-	* to be just less than angle_mag_max_threshold. Consider why this is
-	* required.
-	*/
-	/*
-	* **************************************************
-	* In the section below, replace the statement, *ttt_3 = 0; with a code
-	* segment including the conditional described in the comment above
-	*/
-//	if (angle_mag >= angle_mag_max_threshold - 1) {
-//		*ttt_3 = 1;
-//	} else {
-//		*ttt_3 = 0;
-//	}
-	/*
-	* ***************************************************
-	*/
+
 	*ttt_mag_scale = (int) (angle_mag * 100);
 	sprintf(msg1, " \r\n");
 	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-	sprintf(msg1, "\r\nMotion with Angle Mag of %i degrees complete, Now Return to Next Start Position, ", (int)(angle_mag));
+	sprintf(msg1, "\r\nMotion with Angle Mag of %i degrees complete.\nNow Return to Next Start Position, ",
+			(int) angle_mag);
 	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 	BSP_LED_Off(LED1);
 	HAL_Delay(3000);
@@ -573,15 +527,16 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 	uint8_t id, id_g;
 	SensorAxes_t acceleration, angular_velocity;
 	uint8_t status, status_g;
-	float training_data[6][6];
 	float training_dataset[6][8][6];
 	float XYZ[6];
 	float xyz[6];
 	char msg1[256];
 	int num_train_data_cycles;
-	int i, j, k, m, n, r, error, net_error;
-	int ttt_1, ttt_2, ttt_3, ttt_mag_scale;
-	int rrr_1, rrr_2, rrr_3, rrr_mag_scale;
+	int i, j, k, m, n, r;
+	int error, net_error;
+
+	int ttt_1, ttt_2, ttt_3, ttt_mag_scale; // First three features and their total magnitude
+	int rrr_1, rrr_2, rrr_3, rrr_mag_scale; // Second three features and their total magnitude
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
 	BSP_ACCELERO_IsInitialized(handle, &status);
@@ -589,18 +544,21 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 	BSP_GYRO_Get_Instance(handle, &id_g);
 	BSP_GYRO_IsInitialized(handle, &status_g);
 
-	if (BSP_ACCELERO_Get_Axes(handle, &acceleration) == COMPONENT_ERROR) {
-		acceleration.AXIS_X = 0;
-		acceleration.AXIS_Y = 0;
-		acceleration.AXIS_Z = 0;
-	}
-
 	if (status == 1 && status_g == 1) {
+
+		// Defaults for Component Errors
+		if (BSP_ACCELERO_Get_Axes(handle, &acceleration) == COMPONENT_ERROR) {
+			acceleration.AXIS_X = 0;
+			acceleration.AXIS_Y = 0;
+			acceleration.AXIS_Z = 0;
+		}
 		if (BSP_GYRO_Get_Axes(handle_g, &angular_velocity) == COMPONENT_ERROR) {
 			angular_velocity.AXIS_X = 0;
 			angular_velocity.AXIS_Y = 0;
 			angular_velocity.AXIS_Z = 0;
 		}
+
+		// Training Start
 
 		sprintf(msg1, "\r\n\r\n\r\nTraining Start in 2 seconds ..");
 		CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
@@ -619,84 +577,10 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 				HAL_Delay(START_POSITION_INTERVAL);
 
-				switch (i) {
-				HAL_Delay(1000);
-
-			case 0:
-
-				sprintf(msg1, "\r\nMove to Orientation 1 on LED On");
+				sprintf(msg1, "\r\nMove to Orientation %i on LED On", i+1);
 				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-			case 1:
-
-				sprintf(msg1, "\r\nMove to Orientation 2 on LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-			case 2:
-				sprintf(msg1, "\r\nMove to Orientation 3 on LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-			case 3:
-				sprintf(msg1, "\r\nMove to Orientation 4 on LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-			case 4:
-				sprintf(msg1, "\r\nMove to Orientation 5 on LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-			case 5:
-				sprintf(msg1, "\r\nMove to Orientation 6 on LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-
-				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3,
-						&ttt_mag_scale);
-
-				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3,
-						&rrr_mag_scale);
-
-				break;
-
-				}
+				Feature_Extraction_State_0(handle, &ttt_1, &ttt_2, &ttt_3, &ttt_mag_scale);
+				Feature_Extraction_State_1(handle_g, &rrr_1, &rrr_2, &rrr_3, &rrr_mag_scale);
 
 				sprintf(msg1, "\r\nAccel %i\t\%i\%i", ttt_1, ttt_2, ttt_3);
 				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
@@ -850,7 +734,6 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 	int rrr_1, rrr_2, rrr_3, rrr_mag_scale;
 	char msg1[128];
 
-
 	BSP_ACCELERO_Get_Instance(handle, &id);
 	BSP_ACCELERO_IsInitialized(handle, &status);
 
@@ -926,41 +809,9 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				LED_Code_Blink(loc + 1);
 			}
 
-			switch (loc) {
-			case 0:
-				sprintf(msg1, "\n\rNeural Network Classification - Motion 1");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case 1:
-				sprintf(msg1, "\n\rNeural Network Classification - Motion 2");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case 2:
-				sprintf(msg1, "\n\rNeural Network Classification - Motion 3");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case 3:
-				sprintf(msg1, "\n\rNeural Network Classification - Motion 4");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case 4:
-				sprintf(msg1, "\n\rNeural Network Classification - Motion 5");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case 5:
-				sprintf(msg1,
-						"\n\rNeural Network Classification - Motion 6");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			case -1:
-				sprintf(msg1, "\n\rNeural Network Classification - ERROR");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			default:
-				sprintf(msg1, "\n\rNeural Network Classification - NULL");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				break;
-			}
+			sprintf(msg1, "\n\rNeural Network Classification - Motion %i", loc);
+			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+
 		k = k + 1;
 		}
 	}
@@ -1038,25 +889,27 @@ int main(void) {
 	CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
 
 	//---EMBEDDED ANN---
-	float weights[108] = { 0.680700, 0.324900, 0.607300, 0.365800, 0.693000,
-							0.527200, 0.754400, 0.287800, 0.592300, 0.570900, 0.644000,
-							0.416500, 0.249200, 0.704200, 0.598700, 0.250300, 0.632700,
-							0.372900, 0.684000, 0.661200, 0.230300, 0.516900, 0.770900,
-							0.315700, 0.756000, 0.293300, 0.509900, 0.627800, 0.781600,
-							0.733500, 0.509700, 0.382600, 0.551200, 0.326700, 0.781000,
-							0.563300, 0.297900, 0.714900, 0.257900, 0.682100, 0.596700,
-							0.467200, 0.339300, 0.533600, 0.548500, 0.374500, 0.722800,
-							0.209100, 0.619400, 0.635700, 0.300100, 0.715300, 0.670800,
-							0.794400, 0.766800, 0.349000, 0.412400, 0.619600, 0.353000,
-							0.690300, 0.772200, 0.666600, 0.254900, 0.402400, 0.780100,
-							0.285300, 0.697700, 0.540800, 0.222800, 0.693300, 0.229800,
-							0.698100, 0.463500, 0.201300, 0.786500, 0.581400, 0.706300,
-							0.653600, 0.542500, 0.766900, 0.411500, 0.099300, 0.646100,
-							0.459200, 0.405700, 0.413900, 0.986700, 0.788800, 0.758900,
-							0.332700, 0.026400, 0.242600, 0.339200, 0.922600, 0.021100,
-							0.301000, 0.164300, 0.242700, 0.624500, 0.461200, 0.698400,
-							0.722400, 0.451900, 0.456800, 0.081600, 0.361100, 0.367000,
-							0.784600};
+	float weights[108] = {0.982900, 0.478700, 0.926600, 0.947100, 0.939900,
+	 0.126900, 0.812800, 0.532500, 0.415700, 0.694800,
+	 0.785300, 0.685900, 0.763800, 0.324600, 0.117900,
+	 0.978500, 0.437700, 0.179800, 0.182300, 0.266300,
+	 0.742100, 0.736500, 0.533900, 0.173100, 0.726900,
+	 0.560400, 0.657200, 0.712500, 0.662600, 0.847500,
+	 0.226300, 0.316500, 0.910600, 0.783300, 0.857400,
+	 0.808400, 0.176500, 0.967700, 0.246800, 0.598800,
+	 0.655000, 0.569200, 0.319800, 0.526400, 0.805800,
+	 0.815800, 0.149200, 0.295100, 0.321200, 0.461400,
+	 0.464900, 0.707000, 0.633100, 0.137100, 0.462200,
+	 0.673100, 0.773000, 0.646800, 0.849000, 0.358900,
+	 0.229400, 0.284700, 0.778100, 0.950900, 0.527000,
+	 0.533100, 0.006600, 0.354300, 0.983000, 0.125600,
+	 0.140300, 0.385800, 0.604700, 0.123500, 0.300500,
+	 0.918100, 0.721200, 0.198000, 0.804200, 0.306000,
+	 0.393900, 0.372600, 0.512500, 0.546300, 0.188000,
+	 0.662900, 0.938700, 0.609700, 0.459000, 0.078900,
+	 0.857900, 0.020000, 0.605400, 0.784800, 0.740900,
+	 0.397000, 0.428300, 0.975900, 0.127500, 0.397800,
+	};
 	float dedw[108];
 	float bias[15];
 	unsigned int network_topology[3] = { 6, 9, 6 };
@@ -1127,6 +980,7 @@ int main(void) {
 					&doubleTap);
 			if (doubleTap) { /* Double Tap event */
 				LED_Code_Blink(0);
+				doubleTap = 0;
 				TrainOrientation(LSM6DSM_X_0_handle, LSM6DSM_G_0_handle, &net);
 				hasTrained = 1;
 			}

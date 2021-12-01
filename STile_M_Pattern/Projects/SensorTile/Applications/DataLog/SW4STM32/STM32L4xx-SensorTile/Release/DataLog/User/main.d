@@ -1,6 +1,6 @@
 DataLog/User/main.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/main.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/embeddedML.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/main.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/embeddedML.h \
  ../../../Inc/main.h ../../../Inc/cube_hal.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
@@ -92,7 +92,7 @@ DataLog/User/main.o: \
  ../../../../../../../Drivers/BSP/SensorTile/SensorTile_sd.h \
  ../../../../../../../Middlewares/Third_Party/FatFs/src/drivers/sd_diskio.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/embeddedML.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/embeddedML.h:
 
 ../../../Inc/main.h:
 

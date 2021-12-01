@@ -1,13 +1,13 @@
 Drivers/BSP/SensorTile/SensorTile_pressure.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.h \
  ../../../../../../../Drivers/BSP/Components/lps22hb/LPS22HB_Driver_HL.h \
  ../../../../../../../Drivers/BSP/Components/Common/pressure.h \
  ../../../../../../../Drivers/BSP/Components/Common/sensor.h \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/temperature.h \
  ../../../../../../../Drivers/BSP/Components/lps22hb/LPS22HB_Driver.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -50,7 +50,7 @@ Drivers/BSP/SensorTile/SensorTile_pressure.o: \
  ../../../../../../../Drivers/BSP/Components/Common/accelerometer.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_pressure.h:
 
 ../../../../../../../Drivers/BSP/Components/lps22hb/LPS22HB_Driver_HL.h:
 
@@ -64,7 +64,7 @@ C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/S
 
 ../../../../../../../Drivers/BSP/Components/lps22hb/LPS22HB_Driver.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
 
 ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 

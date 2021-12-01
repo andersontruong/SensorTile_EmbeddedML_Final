@@ -1,7 +1,7 @@
 Drivers/BSP/SensorTile/SensorTile_gg.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -45,13 +45,13 @@ Drivers/BSP/SensorTile/SensorTile_gg.o: \
  ../../../../../../../Drivers/BSP/Components/Common/sensor.h \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h \
- c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\drivers\bsp\components\stc3115\stc3115_driver.h \
+ c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\drivers\bsp\components\stc3115\stc3115_driver.h \
  ../../../../../../../Drivers/BSP/Components/Common/GasGauge.h \
  ../../../../../../../Drivers/BSP/Components/stc3115/STC3115_Driver.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gg.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
 
 ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 
@@ -139,7 +139,7 @@ C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/S
 
 ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h:
 
-c:\users\thinkpad\documents\e96c\final\ 6\ feature\stile_m_pattern\drivers\bsp\components\stc3115\stc3115_driver.h:
+c:\users\thinkpad\documents\github\sensortile_embeddedml_final\stile_m_pattern\drivers\bsp\components\stc3115\stc3115_driver.h:
 
 ../../../../../../../Drivers/BSP/Components/Common/GasGauge.h:
 

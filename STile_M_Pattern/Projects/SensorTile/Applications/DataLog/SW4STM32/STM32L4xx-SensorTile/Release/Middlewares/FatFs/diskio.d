@@ -1,9 +1,9 @@
 Middlewares/FatFs/diskio.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h \
  ../../../Inc/ffconf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
@@ -51,13 +51,13 @@ Middlewares/FatFs/diskio.o: \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/diskio.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/integer.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Middlewares/Third_Party/FatFs/src/ff.h:
 
 ../../../Inc/ffconf.h:
 

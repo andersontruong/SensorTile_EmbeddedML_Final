@@ -1,5 +1,5 @@
 DataLog/User/usbd_cdc_interface.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/usbd_cdc_interface.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/usbd_cdc_interface.c \
  ../../../Inc/main.h ../../../Inc/cube_hal.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \

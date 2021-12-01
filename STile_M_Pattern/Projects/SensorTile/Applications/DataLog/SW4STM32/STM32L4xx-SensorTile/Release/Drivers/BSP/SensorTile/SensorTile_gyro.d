@@ -1,13 +1,13 @@
 Drivers/BSP/SensorTile/SensorTile_gyro.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.c \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.h \
  ../../../../../../../Drivers/BSP/Components/lsm6dsm/LSM6DSM_ACC_GYRO_driver_HL.h \
  ../../../../../../../Drivers/BSP/Components/Common/accelerometer.h \
  ../../../../../../../Drivers/BSP/Components/Common/sensor.h \
  ../../../../../../../Drivers/BSP/Components/Common/component.h \
  ../../../../../../../Drivers/BSP/Components/Common/gyroscope.h \
  ../../../../../../../Drivers/BSP/Components/lsm6dsm/LSM6DSM_ACC_GYRO_driver.h \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -48,7 +48,7 @@ Drivers/BSP/SensorTile/SensorTile_gyro.o: \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_usb.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pcd_ex.h
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile_gyro.h:
 
 ../../../../../../../Drivers/BSP/Components/lsm6dsm/LSM6DSM_ACC_GYRO_driver_HL.h:
 
@@ -62,7 +62,7 @@ C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/S
 
 ../../../../../../../Drivers/BSP/Components/lsm6dsm/LSM6DSM_ACC_GYRO_driver.h:
 
-C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
+C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Drivers/BSP/SensorTile/SensorTile.h:
 
 ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 

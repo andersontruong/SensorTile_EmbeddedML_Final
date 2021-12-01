@@ -1,5 +1,5 @@
 DataLog/User/cube_hal_l4.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/cube_hal_l4.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/cube_hal_l4.c \
  ../../../Inc/cube_hal.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../../../Inc/stm32l4xx_hal_conf.h \

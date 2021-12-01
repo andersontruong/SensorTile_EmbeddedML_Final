@@ -1,5 +1,5 @@
 DataLog/User/usbd_desc.o: \
- C:/Users/thinkpad/Documents/E96C/Final\ 6\ feature/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/usbd_desc.c \
+ C:/Users/thinkpad/Documents/GitHub/SensorTile_EmbeddedML_Final/STile_M_Pattern/Projects/SensorTile/Applications/DataLog/Src/usbd_desc.c \
  ../../../../../../../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../../../Inc/usbd_conf.h \
  ../../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
