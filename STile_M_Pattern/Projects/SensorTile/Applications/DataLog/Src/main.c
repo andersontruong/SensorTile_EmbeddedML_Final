@@ -114,7 +114,7 @@ static void initializeAllSensors(void);
 static volatile uint8_t hasTrained = 0;
 unsigned int training_cycles = TRAINING_CYCLES;
 
-void EZPRINT(char *format[], ...) {
+void print(char *format, ...) {
 	char buffer[128];
 	va_list args;
 	va_start(args, format);
@@ -268,28 +268,23 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  * Note : Feature_Extraction_State_0() sets Z-axis acceleration, ttt_3 = 0
  */
 
-void Feature_Extraction_State_0(void *handle,
-								int *features[]) {
-
+void Feature_Extraction_State_0(void *handle, int *features) {
 	int ttt_initial[3]; // Base State Acceleration
 	int ttt[3]; // State Acceleration
 	int i; // Indexing Number
 	int axis_index;
 	float accel_mag;
-	char msg[128];
 
 	// Acquire acceleration values before motion
 	getAccel(handle, ttt_initial);
 
 	// Prompt First Motion
-	sprintf(msg, "\r\nStart First Motion when LED On");
-	CDC_Fill_Buffer((uint8_t *) msg, strlen(msg));
+	print("\r\nStart First Motion when LED On");
 	BSP_LED_On(LED1);
 
 	HAL_Delay(2000);
 
-	sprintf(msg, "\r\nEnd Motion");
-	CDC_Fill_Buffer((uint8_t *) msg, strlen(msg));
+	print("\r\nEnd Motion");
 	HAL_Delay(1000);
 
 	// Acquire acceleration values after motion
@@ -301,7 +296,6 @@ void Feature_Extraction_State_0(void *handle,
 	}
 
 	accel_mag = sqrt(accel_mag);
-	//*ttt_mag_scale = (int)(accel_mag);
 
 	for (i = 0; i < 3; i++) {
 		*(features + i) = ttt[i] - ttt_initial[i];
@@ -315,9 +309,8 @@ void Feature_Extraction_State_0(void *handle,
  * Feature_Extraction_State_1() determines a second orientation after
  * the action of Feature_Extraction_State_0().
  */
-void Feature_Extraction_State_1(void *handle_g, int *features[]) {
+void Feature_Extraction_State_1(void *handle_g, int *features) {
 	int ttt[3], ttt_initial[3], ttt_offset[3];
-	char msg1[128];
 	int axis_index, sample_index, i; // Indexing Numbers
 	float rotate_angle[3];
 	float angle_mag;
@@ -357,8 +350,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features[]) {
 	/*
 	* Notify user to initiate motion
 	*/
-	sprintf(msg1, "\r\nStart Second Motion when LED On");
-	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+	print("\r\nStart Second Motion when LED On");
 	BSP_LED_On(LED1);
 	for (sample_index = 0; sample_index < MAX_ROTATION_ACQUIRE_CYCLES; sample_index++) {
 		/*
@@ -415,9 +407,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features[]) {
 		}
 	}
 
-	sprintf(msg1, "\r\n\r\nMotion with Angle Mag of %i degrees complete.\nNow Return to Next Start Position, ",
-			(int) angle_mag);
-	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+	print("\r\n\r\nMotion with Angle Mag of %i degrees complete.\n\rNow Return to Next Start Position, ", (int) angle_mag);
 
 	BSP_LED_Off(LED1);
 	HAL_Delay(3000);
@@ -425,8 +415,6 @@ void Feature_Extraction_State_1(void *handle_g, int *features[]) {
 }
 
 void printOutput_ANN(ANN *net, int input_state, int * error) {
-
-	char dataOut[256] = { };
 	int i, loc, count;
 	float point = 0.0;
 	float rms_output, mean_output, mean_output_rem, next_max;
@@ -441,8 +429,7 @@ void printOutput_ANN(ANN *net, int input_state, int * error) {
 	count = 0;
 	mean_output = 0;
 	for (i = 0; i < net->topology[net->n_layers - 1]; i++) {
-		sprintf(dataOut, "Output %f", net->output[i]);
-		CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
+//		print("Output %f", net->output[i]); // Diagnose Output Values
 		mean_output = mean_output + (net->output[i]);
 		if (net->output[i] > point && net->output[i] > 0.1) {
 			point = net->output[i];
@@ -482,8 +469,7 @@ void printOutput_ANN(ANN *net, int input_state, int * error) {
 	}
 
 	rms_output = sqrt(rms_output / count);
-	sprintf(dataOut, "RMS_OUTPUT: %d", rms_output);
-	CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
+	print("RMS_OUTPUT: %d", rms_output);
 	if (rms_output != 0) {
 		classification_metric = (point - mean_output) / rms_output;
 	} else {
@@ -498,28 +484,24 @@ void printOutput_ANN(ANN *net, int input_state, int * error) {
 		mean_output_rem = 0;
 	}
 
-	sprintf(dataOut, "\r\nState %i\tMax %i\tMean %i\t\tZ-score %i\tOutputs",
+	print("\r\nState %i\tMax %i\tMean %i\t\tZ-score %i\tOutputs",
 			loc, (int) (100 * point), (int) (100 * mean_output),
 			(int) (100 * classification_metric));
-	CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
 
 	for (i = 0; i < net->topology[net->n_layers - 1]; i++) {
-		sprintf(dataOut, "\t%i", (int) (100 * net->output[i]));
-		CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
+		print("\t%i", (int) (100 * net->output[i]));
 	}
 
 	if (loc != input_state) {
 		*error = 1;
-		sprintf(dataOut, "\t Classification Error");
-		CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
+		print("\t Classification Error");
 	}
 
 	if ((loc == input_state)
 			&& ((classification_metric < CLASSIFICATION_ACC_THRESHOLD)
 					|| ((point / next_max) < CLASSIFICATION_DISC_THRESHOLD))) {
 		*error = 1;
-		sprintf(dataOut, "\t Classification Accuracy Limit");
-		CDC_Fill_Buffer((uint8_t *) dataOut, strlen(dataOut));
+		print("\t Classification Accuracy Limit");
 	}
 
 }
@@ -534,13 +516,10 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 	float xyz[6];
 	char msg1[256];
 	int num_train_data_cycles;
-	int i, j, k, m, n, r;
+	int i, j, k, m, r;
 	int error, net_error;
 
 	int features[6];
-
-	int ttt_1, ttt_2, ttt_3, ttt_mag_scale; // First three features and their total magnitude
-	int rrr_1, rrr_2, rrr_3, rrr_mag_scale; // Second three features and their total magnitude
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
 	BSP_ACCELERO_IsInitialized(handle, &status);
@@ -564,8 +543,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 		// Training Start
 
-		sprintf(msg1, "\r\n\r\n\r\nTraining Start in 2 seconds ..");
-		CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+		print("\r\n\r\n\r\nTraining Start in 2 seconds ..");
 		BSP_LED_Off(LED1);
 		HAL_Delay(2000);
 
@@ -577,17 +555,14 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		for (k = 0; k < num_train_data_cycles; k++) {
 			for (i = 0; i < 6; i++) {
 
-				sprintf(msg1, "\r\nMove to Start Position - Wait for LED On");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\nMove to Start Position - Wait for LED On");
 				HAL_Delay(START_POSITION_INTERVAL);
 
-				sprintf(msg1, "\r\nMove to Orientation %i on LED On", i+1);
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\nMove to Orientation %i on LED On", i+1);
 				Feature_Extraction_State_0(handle, &features);
 				Feature_Extraction_State_1(handle_g, &features);
 
-				sprintf(msg1, "\r\nAccel %i\t\%i\%i", features[0], features[1], features[2]);
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\nAccel %i\t\%i\%i", features[0], features[1], features[2]);
 
 				for (j = 0; j < 6; j++) {
 					XYZ[j] = (float) features[j];
@@ -599,26 +574,21 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 					training_dataset[i][k][j] = xyz[j];
 				}
 
-				int o;
-				for (o = 0; o < 6; o++) {
-					sprintf(msg1, "Dataset #%i, Val: %f", o, training_dataset[i][k][o]);
-					CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
-				}
+				// Diagnosing "training_dataset" values
+//				int o;
+//				for (o = 0; o < 6; o++) {
+//					print("Dataset #%i, Val: %f", o, training_dataset[i][k][o]);
+//				}
 
-				sprintf(msg1, "\r\n Softmax Input \t");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\n Softmax Input \t");
 				for (r = 0; r < 6; r++) {
-					sprintf(msg1, "\t%i", (int) XYZ[r]);
-					CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+					print("\t%i", (int) XYZ[r]);
 				}
-				sprintf(msg1, "\r\n Softmax Output\t");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\n Softmax Output\t");
 				for (r = 0; r < 6; r++) {
-					sprintf(msg1, "\t%i", (int) (100 * xyz[r]));
-					CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+					print("\t%i", (int) (100 * xyz[r]));
 				}
-				sprintf(msg1, "\r\n\r\n");
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("\r\n\r\n");
 			}
 		}
 
@@ -645,10 +615,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 					if ((i % 20 == 0 && i < 100) || i % 100 == 0) {
 						char print_train_time[128];
-						sprintf(print_train_time,
-								"\r\n\r\nTraining Epochs: %d\r\n", i);
-						CDC_Fill_Buffer((uint8_t *) print_train_time,
-								strlen(print_train_time));
+						print("\r\n\r\nTraining Epochs: %d\r\n", i);
 
 						LED_Code_Blink(0);
 
@@ -660,9 +627,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 								net_error = 1;
 							}
 						}
-						sprintf(msg1, "\r\nError State: %i\r\n",
-								net_error);
-						CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+						print("\r\nError State: %i\r\n", net_error);
 						if (net_error == 0) {
 							return;
 						}
@@ -715,8 +680,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		LED_Code_Blink(1);
 	}
 
-	sprintf(msg1, "\r\n\r\nTraining Complete, Now Start Test Motions\r\n");
-	CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+	print("\r\n\r\nTraining Complete, Now Start Test Motions\r\n");
 	return;
 }
 
@@ -729,7 +693,6 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 	float point;
 	int i, j, k, loc;
 	int features[6];
-	char msg1[128];
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
 	BSP_ACCELERO_IsInitialized(handle, &status);
@@ -743,6 +706,11 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 			acceleration.AXIS_Y = 0;
 			acceleration.AXIS_Z = 0;
 		}
+		if (BSP_ACCELERO_Get_Axes(handle, &angular_velocity) == COMPONENT_ERROR) {
+			angular_velocity.AXIS_X = 0;
+			angular_velocity.AXIS_Y = 0;
+			angular_velocity.AXIS_Z = 0;
+		}
 
 		/*
 		 * Perform limited number of NN execution and prediction cycles.
@@ -755,8 +723,7 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 
 			BSP_LED_Off(LED1);
 
-			sprintf(msg1, "\n\rMove to Start Position - Wait for LED On");
-			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+			print("\n\rMove to Start Position - Wait for LED On");
 			HAL_Delay(START_POSITION_INTERVAL);
 
 			Feature_Extraction_State_0(handle, &features);
@@ -769,19 +736,14 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 
 			motion_softmax(net->topology[0], XYZ, xyz);
 
-			sprintf(msg1, "\r\n Softmax Input: \t");
-			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+			print("\r\n Softmax Input: \t");
 			for (j = 0; j < 6; j++) {
-				sprintf(msg1, "%i\t", (int) XYZ[j]);
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("%i\t", (int) XYZ[j]);
 			}
-			sprintf(msg1, "\r\n Softmax Output: \t");
-			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+			print("\r\n Softmax Output: \t");
 			for (j = 0; j < 6; j++) {
-				sprintf(msg1, "%i\t", (int) (100 * xyz[j]));
-				CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+				print("%i\t", (int) (100 * xyz[j]));
 			}
-			sprintf(msg1, "\r\n");
 
 			run_ann(net, xyz);
 
@@ -801,8 +763,7 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				LED_Code_Blink(loc + 1);
 			}
 
-			sprintf(msg1, "\n\rNeural Network Classification - Motion %i", loc + 1);
-			CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
+			print("\n\r\n\rNeural Network Classification - Motion %i", loc + 1);
 
 		k = k + 1;
 		}
@@ -814,7 +775,6 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 int main(void) {
 	uint32_t msTick, msTickPrev = 0;
 	uint8_t doubleTap = 0;
-	char msg2[128];
 	int i;
 
 	/* STM32L4xx HAL library initialization:
@@ -874,11 +834,9 @@ int main(void) {
 
 	/* Notify user */
 
-	sprintf(msg2, "\n\rEmbeddedML Physical Therapy Two-Motion Exercise Classification\r\n");
-	CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
+	print("\n\rEmbeddedML Physical Therapy Two-Motion Exercise Classification\r\n");
 
-	sprintf(msg2, "\n\rDOUBLE TAP to start recording motions");
-	CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
+	print("\n\rDOUBLE TAP to start recording motions");
 
 	//---EMBEDDED ANN---
 	float weights[108] = {0.982900, 0.478700, 0.926600, 0.947100, 0.939900,
@@ -956,8 +914,7 @@ int main(void) {
 				 * Upon return from Accel_Gyro_Sensor_Handler, initiate retraining.
 				 */
 				hasTrained = 0;
-				sprintf(msg2, "\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises");
-				CDC_Fill_Buffer((uint8_t *) msg2, strlen(msg2));
+				print("\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises");
 			}
 
 			if (SendOverUSB) {
