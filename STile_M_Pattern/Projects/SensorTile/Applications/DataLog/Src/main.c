@@ -74,7 +74,7 @@
 
 // Change for Angle Threshold
 #define ANGLE_MAG_MAX_THRESHOLD 90
-#define MAX_ROTATION_ACQUIRE_CYCLES 400
+#define MAX_ROTATION_ACQUIRE_CYCLES 300
 
 //#define NOT_DEBUGGING
 
@@ -275,16 +275,20 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	int axis_index;
 	float accel_mag;
 
+	print("\r\nMove to Start Position...");
+	HAL_Delay(START_POSITION_INTERVAL);
+
 	// Acquire acceleration values before motion
 	getAccel(handle, ttt_initial);
+	print("\r\nDone.\n");
 
 	// Prompt First Motion
-	print("\r\nStart First Motion when LED On");
+	print("\r\nStart First Motion...");
 	BSP_LED_On(LED1);
 
 	HAL_Delay(2000);
 
-	print("\r\nEnd Motion");
+	print("\r\nDone.\n");
 	HAL_Delay(1000);
 
 	// Acquire acceleration values after motion
@@ -302,6 +306,7 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	}
 
 	BSP_LED_Off(LED1);
+	HAL_Delay(1000);
 	return;
 }
 
@@ -350,7 +355,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 	/*
 	* Notify user to initiate motion
 	*/
-	print("\r\nStart Second Motion when LED On");
+	print("\r\nStart Second Motion...");
 	BSP_LED_On(LED1);
 	for (sample_index = 0; sample_index < MAX_ROTATION_ACQUIRE_CYCLES; sample_index++) {
 		/*
@@ -370,12 +375,12 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 		*/
 		getAngularVelocity(handle_g, ttt);
 		for (axis_index = 0; axis_index < 3; axis_index++) {
-			ttt[axis_index] = ttt[axis_index] - ttt_offset[axis_index];
+			ttt[axis_index] -= ttt_offset[axis_index];
 		}
 
 		// Compute rotation angles by integration
 		for (axis_index = 0; axis_index < 3; axis_index++) {
-			rotate_angle[axis_index] = rotate_angle[axis_index] + (float)((ttt_initial[axis_index] + ttt[axis_index]) * Tsample / 2);
+			rotate_angle[axis_index] += (float)((ttt_initial[axis_index] + ttt[axis_index]) * Tsample / 2);
 		}
 		/*
 		*
@@ -388,29 +393,30 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 		*/
 		angle_mag = 0;
 		for (axis_index = 0; axis_index < 3; axis_index++) {
-			angle_mag = angle_mag + pow((rotate_angle[axis_index]), 2);
+			angle_mag += pow((rotate_angle[axis_index]), 2);
 		}
 		/*
 		* Compute angle magnitude and convert from milli-degrees to
 		* degrees
 		*/
 		angle_mag = sqrt(angle_mag)/1000;
-		 /*
-		* Compute rotation angle magnitude
-		*/
-		if (angle_mag >= ANGLE_MAG_MAX_THRESHOLD) {
-			break;
-		}
+
+//		if (angle_mag >= ANGLE_MAG_MAX_THRESHOLD) {
+//			break;
+//		}
 
 		for (i = 0; i < 3; i++) {
 			*(features + i + 3) = (int) rotate_angle[i];
 		}
 	}
 
-	print("\r\n\r\nMotion with Angle Mag of %i degrees complete.\n\rNow Return to Next Start Position, ", (int) angle_mag);
+	HAL_Delay(1000);
+	print("\r\nDone.\r\n\r\nYou moved %i degrees.", (int) angle_mag);
 
 	BSP_LED_Off(LED1);
-	HAL_Delay(3000);
+	HAL_Delay(1000);
+	print("\r\nPrepare for next exercise...");
+	HAL_Delay(2000);
 	return;
 }
 
@@ -543,7 +549,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 		// Training Start
 
-		print("\r\n\r\n\r\nTraining Start in 2 seconds ..");
+		print("\r\n\r\n\r\nNeural Network Training Start in 2 seconds ...\r\n");
 		BSP_LED_Off(LED1);
 		HAL_Delay(2000);
 
@@ -555,10 +561,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		for (k = 0; k < num_train_data_cycles; k++) {
 			for (i = 0; i < 6; i++) {
 
-				print("\r\nMove to Start Position - Wait for LED On");
-				HAL_Delay(START_POSITION_INTERVAL);
-
-				print("\r\nMove to Orientation %i on LED On", i+1);
+				print("\r\nRecording Exercise #%i:", i+1);
 				Feature_Extraction_State_0(handle, &features);
 				Feature_Extraction_State_1(handle_g, &features);
 
@@ -595,15 +598,16 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		/*
 		 * Enter NN training
 		 */
+		float _Motions[6][6] = {
+			{ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
+		};
 
-		float _Motion_1[6] = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-		float _Motion_2[6] = { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
-		float _Motion_3[6] = { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 };
-		float _Motion_4[6] = { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-		float _Motion_5[6] = { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
-		float _Motion_6[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
-
-		sprintf(msg1, "\r\n\r\nTraining Start\r\n");
+		sprintf(msg1, "\r\n\r\nNeural Network is now training...\r\n");
 		CDC_Fill_Buffer((uint8_t *) msg1, strlen(msg1));
 
 		for (k = 0; k < num_train_data_cycles; k++) {
@@ -614,7 +618,6 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 
 					if ((i % 20 == 0 && i < 100) || i % 100 == 0) {
-						char print_train_time[128];
 						print("\r\n\r\nTraining Epochs: %d\r\n", i);
 
 						LED_Code_Blink(0);
@@ -634,29 +637,8 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 					}
 
-					switch (j) {
+					train_ann(net, training_dataset[j][k], _Motions[j]);
 
-					case 0:
-						train_ann(net, training_dataset[j][k], _Motion_1);
-						break;
-					case 1:
-						train_ann(net, training_dataset[j][k], _Motion_2);
-						break;
-					case 2:
-						train_ann(net, training_dataset[j][k], _Motion_3);
-						break;
-					case 3:
-						train_ann(net, training_dataset[j][k], _Motion_4);
-						break;
-					case 4:
-						train_ann(net, training_dataset[j][k], _Motion_5);
-						break;
-					case 5:
-						train_ann(net, training_dataset[j][k], _Motion_6);
-						break;
-					default:
-						break;
-					}
 					i++;
 					HAL_Delay(5);
 				}
@@ -680,7 +662,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		LED_Code_Blink(1);
 	}
 
-	print("\r\n\r\nTraining Complete, Now Start Test Motions\r\n");
+	print("\r\n\r\nTraining Complete, Now Start Classifying Exercises.\r\n");
 	return;
 }
 
@@ -717,21 +699,18 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 		 * Upon return, training will be repeased
 		 */
 
-		k = 0;
+		i = 0;
 
-		while (k < NUMBER_TEST_CYCLES) {
+		while (i < NUMBER_TEST_CYCLES) {
 
 			BSP_LED_Off(LED1);
-
-			print("\n\rMove to Start Position - Wait for LED On");
-			HAL_Delay(START_POSITION_INTERVAL);
 
 			Feature_Extraction_State_0(handle, &features);
 
 			Feature_Extraction_State_1(handle_g, &features);
 
-			for (i = 0; i < 6; i++) {
-				XYZ[i] = (float) features[i];
+			for (j = 0; j < 6; j++) {
+				XYZ[j] = (float) features[j];
 			}
 
 			motion_softmax(net->topology[0], XYZ, xyz);
@@ -750,10 +729,10 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 			point = 0.0;
 			loc = -1;
 
-			for (i = 0; i < net->topology[net->n_layers - 1]; i++) {
-				if (net->output[i] > point && net->output[i] > 0.1) {
-					point = net->output[i];
-					loc = i;
+			for (j = 0; j < net->topology[net->n_layers - 1]; j++) {
+				if (net->output[j] > point && net->output[j] > 0.1) {
+					point = net->output[j];
+					loc = j;
 				}
 			}
 
@@ -763,9 +742,9 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				LED_Code_Blink(loc + 1);
 			}
 
-			print("\n\r\n\rNeural Network Classification - Motion %i", loc + 1);
+			print("\n\r\n\rYou performed Exercise #%i", loc + 1);
 
-		k = k + 1;
+		i++;
 		}
 	}
 	return prev_loc;
