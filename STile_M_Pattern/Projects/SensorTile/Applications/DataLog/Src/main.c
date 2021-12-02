@@ -289,11 +289,9 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	print("\r\nStart First Motion...");
 	BSP_LED_On(LED1);
 
-	HAL_Delay(2000);
+	HAL_Delay(3000);
 
 	print("\r\nDone.\n");
-
-	HAL_Delay(1000);
 
 	// Acquire acceleration values after motion
 	getAccel(handle, ttt);
@@ -304,14 +302,16 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	}
 
 	//
-	accel_mag = sqrt(accel_mag);
 
-	for (i = 0; i < 3; i++) {
-		*(features + i) = ttt[i] - ttt_initial[i];
+	for (axis_index = 0; axis_index < 3; axis_index++) {
+		*(features + axis_index) = ttt[axis_index] - ttt_initial[axis_index];
+		accel_mag += pow(*(features + axis_index), 2);
 	}
 
+	accel_mag = sqrt(accel_mag);
+
 	BSP_LED_Off(LED1);
-	HAL_Delay(1000);
+	HAL_Delay(2000);
 	return;
 }
 
@@ -321,7 +321,7 @@ void Feature_Extraction_State_0(void *handle, int *features) {
  */
 void Feature_Extraction_State_1(void *handle_g, int *features) {
 	int ttt[3], ttt_initial[3], ttt_offset[3];
-	int axis_index, sample_index, i; // Indexing Numbers
+	int axis_index, sample_index; // Indexing Numbers
 	float rotate_angle[3];
 	float angle_mag;
 	float Tsample;
@@ -380,11 +380,9 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 		*/
 		getAngularVelocity(handle_g, ttt);
 		for (axis_index = 0; axis_index < 3; axis_index++) {
+			// Remove Offset Value
 			ttt[axis_index] -= ttt_offset[axis_index];
-		}
-
-		// Compute rotation angles by integration
-		for (axis_index = 0; axis_index < 3; axis_index++) {
+			// Compute Rotation Angles by Integration
 			rotate_angle[axis_index] += (float)((ttt_initial[axis_index] + ttt[axis_index]) * Tsample / 2);
 		}
 		/*
@@ -410,8 +408,8 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 //			break;
 //		}
 
-		for (i = 0; i < 3; i++) {
-			*(features + i + 3) = (int) rotate_angle[i];
+		for (axis_index = 0; axis_index < 3; axis_index++) {
+			*(features + axis_index + 3) = (int) rotate_angle[axis_index];
 		}
 	}
 
@@ -676,7 +674,8 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 	float xyz[6];
 	float XYZ[6];
 	float point;
-	int i, j, k, loc;
+	int i, j, loc;
+	int doubleTap = 0;
 	int features[6];
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
@@ -704,50 +703,53 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 
 		i = 0;
 
-		while (i < NUMBER_TEST_CYCLES) {
+		//while (i < NUMBER_TEST_CYCLES) {
+		while (1) {
 
 			BSP_LED_Off(LED1);
-
-			Feature_Extraction_State_0(handle, &features);
-
-			Feature_Extraction_State_1(handle_g, &features);
-
-			for (j = 0; j < 6; j++) {
-				XYZ[j] = (float) features[j];
-			}
-
-			motion_softmax(net->topology[0], XYZ, xyz);
-
-			print("\r\n Softmax Input: \t");
-			for (j = 0; j < 6; j++) {
-				print("%i\t", (int) XYZ[j]);
-			}
-			print("\r\n Softmax Output: \t");
-			for (j = 0; j < 6; j++) {
-				print("%i\t", (int) (100 * xyz[j]));
-			}
-
-			run_ann(net, xyz);
-
-			point = 0.0;
-			loc = -1;
-
-			for (j = 0; j < net->topology[net->n_layers - 1]; j++) {
-				if (net->output[j] > point && net->output[j] > 0.1) {
-					point = net->output[j];
-					loc = j;
-				}
-			}
-
-			if (loc == -1) {
+			BSP_ACCELERO_Get_Double_Tap_Detection_Status_Ext(LSM6DSM_X_0_handle, &doubleTap);
+			if (doubleTap) { /* Double Tap event */
 				LED_Code_Blink(0);
-			} else {
-				LED_Code_Blink(loc + 1);
+				doubleTap = 0;
+
+				Feature_Extraction_State_0(handle, &features);
+				Feature_Extraction_State_1(handle_g, &features);
+
+				for (j = 0; j < 6; j++) {
+					XYZ[j] = (float) features[j];
+				}
+
+				motion_softmax(net->topology[0], XYZ, xyz);
+
+				print("\r\n Softmax Input: \t");
+				for (j = 0; j < 6; j++) {
+					print("%i\t", (int) XYZ[j]);
+				}
+				print("\r\n Softmax Output: \t");
+				for (j = 0; j < 6; j++) {
+					print("%i\t", (int) (100 * xyz[j]));
+				}
+
+				run_ann(net, xyz);
+
+				point = 0.0;
+				loc = -1;
+
+				for (j = 0; j < net->topology[net->n_layers - 1]; j++) {
+					if (net->output[j] > point && net->output[j] > 0.1) {
+						point = net->output[j];
+						loc = j;
+					}
+				}
+
+				if (loc == -1) {
+					LED_Code_Blink(0);
+				} else {
+					LED_Code_Blink(loc + 1);
+				}
+
+				print("\n\r\n\rYou performed Exercise #%i.\n\n", loc + 1);
 			}
-
-			print("\n\r\n\rYou performed Exercise #%i", loc + 1);
-
-		i++;
 		}
 	}
 	return prev_loc;
