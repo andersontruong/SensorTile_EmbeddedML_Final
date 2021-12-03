@@ -414,7 +414,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 	}
 
 	HAL_Delay(1000);
-	print("\r\nDone.\r\n\r\nYou moved %i degrees.", (int) angle_mag);
+	print("\r\nDone.\r\n\r\nYou moved %i degrees.\n", (int) angle_mag);
 
 	BSP_LED_Off(LED1);
 	HAL_Delay(3000);
@@ -525,6 +525,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 	int num_train_data_cycles;
 	int i, j, k, m, r;
 	int error, net_error;
+	uint8_t doubleTap = 0;
 
 	int features[6];
 
@@ -550,7 +551,7 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 
 		// Training Start
 
-		print("\r\n\r\n\r\nNeural Network Training Start in 2 seconds ...\r\n");
+		print("\r\n\r\n\r\nDOUBLE TAP to Record the First Exercise\r\n");
 		BSP_LED_Off(LED1);
 		HAL_Delay(2000);
 
@@ -562,11 +563,19 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		for (k = 0; k < num_train_data_cycles; k++) {
 			for (i = 0; i < 6; i++) {
 
+				while (!doubleTap) {
+					BSP_ACCELERO_Get_Double_Tap_Detection_Status_Ext(LSM6DSM_X_0_handle, &doubleTap);
+					if (doubleTap) { /* Double Tap event */
+						LED_Code_Blink(0);
+						doubleTap = 0;
+						break;
+					}
+				}
 				print("\r\nRecording Exercise #%i:", i+1);
 				Feature_Extraction_State_0(handle, &features);
 				Feature_Extraction_State_1(handle_g, &features);
 
-				print("\r\nAccel %i\t\%i\%i", features[0], features[1], features[2]);
+				print("\r\nAcceleration:\tX:%i\tY:\%i\tZ:%i", features[0], features[1], features[2]);
 
 				for (j = 0; j < 6; j++) {
 					XYZ[j] = (float) features[j];
@@ -584,15 +593,16 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 //					print("Dataset #%i, Val: %f", o, training_dataset[i][k][o]);
 //				}
 
-				print("\r\n Softmax Input \t");
+				print("\r\nSoftmax Input \t");
 				for (r = 0; r < 6; r++) {
 					print("\t%i", (int) XYZ[r]);
 				}
-				print("\r\n Softmax Output\t");
+				print("\r\nSoftmax Output\t");
 				for (r = 0; r < 6; r++) {
 					print("\t%i", (int) (100 * xyz[r]));
 				}
 				print("\r\n\r\n");
+				print("\r\nDOUBLE TAP to Record the Next Exercise\r\n");
 			}
 		}
 
@@ -663,7 +673,8 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 		LED_Code_Blink(1);
 	}
 
-	print("\r\n\r\nTraining Complete, Now Start Classifying Exercises.\r\n");
+	print("\r\n\r\nTraining Complete, Now Start Classifying Exercises.");
+	print("\r\nDOUBLE TAP to Record an Exercise Motion for Classification.\r\n");
 	return;
 }
 
@@ -674,8 +685,8 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 	float xyz[6];
 	float XYZ[6];
 	float point;
-	int i, j, loc;
-	int doubleTap = 0;
+	int i, loc;
+	uint8_t doubleTap = 0;
 	int features[6];
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
@@ -701,8 +712,6 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 		 * Upon return, training will be repeased
 		 */
 
-		i = 0;
-
 		//while (i < NUMBER_TEST_CYCLES) {
 		while (1) {
 
@@ -715,19 +724,19 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				Feature_Extraction_State_0(handle, &features);
 				Feature_Extraction_State_1(handle_g, &features);
 
-				for (j = 0; j < 6; j++) {
-					XYZ[j] = (float) features[j];
+				for (i = 0; i < 6; i++) {
+					XYZ[i] = (float) features[i];
 				}
 
 				motion_softmax(net->topology[0], XYZ, xyz);
 
 				print("\r\n Softmax Input: \t");
-				for (j = 0; j < 6; j++) {
-					print("%i\t", (int) XYZ[j]);
+				for (i = 0; i < 6; i++) {
+					print("%i\t", (int) XYZ[i]);
 				}
 				print("\r\n Softmax Output: \t");
-				for (j = 0; j < 6; j++) {
-					print("%i\t", (int) (100 * xyz[j]));
+				for (i = 0; i < 6; i++) {
+					print("%i\t", (int) (100 * xyz[i]));
 				}
 
 				run_ann(net, xyz);
@@ -735,10 +744,10 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 				point = 0.0;
 				loc = -1;
 
-				for (j = 0; j < net->topology[net->n_layers - 1]; j++) {
-					if (net->output[j] > point && net->output[j] > 0.1) {
-						point = net->output[j];
-						loc = j;
+				for (i = 0; i < net->topology[net->n_layers - 1]; i++) {
+					if (net->output[i] > point && net->output[i] > 0.1) {
+						point = net->output[i];
+						loc = i;
 					}
 				}
 
@@ -748,7 +757,8 @@ int Accel_Gyro_Sensor_Handler(void *handle, void *handle_g, ANN *net, int prev_l
 					LED_Code_Blink(loc + 1);
 				}
 
-				print("\n\r\n\rYou performed Exercise #%i.\n\n", loc + 1);
+				print("\r\n\r\nYou performed Exercise #%i.\n\n", loc + 1);
+				print("\r\nDOUBLE TAP to Record another Exercise Motion for Classification.\r\n");
 			}
 		}
 	}
@@ -820,7 +830,7 @@ int main(void) {
 
 	print("\n\rEmbeddedML Physical Therapy Two-Motion Exercise Classification\r\n");
 
-	print("\n\rDOUBLE TAP to start recording motions");
+	print("\n\rInstructions: To start recording the next exercise, DOUBLE TAP the device.");
 
 	//---EMBEDDED ANN---
 	float weights[108] = {0.982900, 0.478700, 0.926600, 0.947100, 0.939900,
@@ -909,14 +919,8 @@ int main(void) {
 
 		/* Check LSM6DSM Double Tap Event  */
 		if (!hasTrained) {
-			BSP_ACCELERO_Get_Double_Tap_Detection_Status_Ext(LSM6DSM_X_0_handle,
-					&doubleTap);
-			if (doubleTap) { /* Double Tap event */
-				LED_Code_Blink(0);
-				doubleTap = 0;
-				TrainOrientation(LSM6DSM_X_0_handle, LSM6DSM_G_0_handle, &net);
-				hasTrained = 1;
-			}
+			TrainOrientation(LSM6DSM_X_0_handle, LSM6DSM_G_0_handle, &net);
+			hasTrained = 1;
 		}
 
 		/* Go to Sleep */
