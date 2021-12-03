@@ -72,8 +72,6 @@
 #define TRAINING_CYCLES 2000
 #define LED_BLINK_INTERVAL 200
 
-// Change for Angle Threshold
-#define ANGLE_MAG_MAX_THRESHOLD 90
 #define MAX_ROTATION_ACQUIRE_CYCLES 300
 
 //#define NOT_DEBUGGING
@@ -150,19 +148,46 @@ void stable_softmax(float *x, float *y) {
 }
 
 void motion_softmax(int size, float *x, float *y) {
-	float norm1, norm2;
+	int i, j;
+	float norm_temp; // norm for each triplet
 
-	norm1 = sqrt((x[0] * x[0]) + (x[1] * x[1]) + (x[2] * x[2]));
-	y[0] = abs(x[0]) / norm1;
-	y[1] = abs(x[1]) / norm1;
-	y[2] = abs(x[2]) / norm1;
+	/*
+	 * Loop through each triplet of array 'x'
+	 */
+	for (i = 0; i < size/3; i++) {
+		norm_temp = 0;
 
-	norm2 = sqrt((x[3] * x[3]) + (x[4] * x[4]) + (x[5] * x[5]));
-	y[3] = abs(x[3]) / norm2;
-	y[4] = abs(x[4]) / norm2;
-	y[5] = abs(x[5]) / norm2;
+		/*
+		 * Loop over each item in array 'x'
+		 */
+		for (j = 0; j < size; j++) {
+			/*
+			 * If 'x' item in specific triplet, add square of item to norm_temp
+			 */
+			if (floor(j/3) == i) {
+				norm_temp += pow(x[j], 2);
+			}
+		}
 
-	int i;
+		/*
+		 * Root the sum of squares of the triplet
+		 */
+		norm_temp = sqrt(norm_temp);
+
+		/*
+		 * Loop over each item in array 'x'
+		 * Set 'y' item of same 'x' index to normalized value of 'x' item
+		 */
+		for (j = 0; j < size; j++) {
+			if (floor(j/3) == i) {
+				y[j] = abs(x[j]) / norm_temp;
+			}
+		}
+	}
+
+	/*
+	 * Re-apply negatives
+	 */
 	for (i = 0; i < size; i++) {
 		if (x[i] < 0.0)
 			y[i] = y[i] * -1.0;
@@ -230,7 +255,6 @@ void getAccel(void *handle, int *xyz) {
 	SensorAxes_t acceleration;
 
 	BSP_ACCELERO_Get_Instance(handle, &id);
-
 	BSP_ACCELERO_IsInitialized(handle, &status);
 
 	if (status == 1) {
@@ -240,6 +264,9 @@ void getAccel(void *handle, int *xyz) {
 			acceleration.AXIS_Z = 0;
 		}
 
+		/*
+		 * Assign axial accelerations
+		 */
 		xyz[0] = (int) acceleration.AXIS_X;
 		xyz[1] = (int) acceleration.AXIS_Y;
 		xyz[2] = (int) acceleration.AXIS_Z;
@@ -252,21 +279,22 @@ void getAngularVelocity(void *handle_g, int *xyz) {
 	SensorAxes_t angular_velocity;
 	BSP_GYRO_Get_Instance(handle_g, &id);
 	BSP_GYRO_IsInitialized(handle_g, &status);
+
 	if (status == 1) {
-	if (BSP_GYRO_Get_Axes(handle_g, &angular_velocity) == COMPONENT_ERROR) {
+		if (BSP_GYRO_Get_Axes(handle_g, &angular_velocity) == COMPONENT_ERROR) {
 			angular_velocity.AXIS_X = 0;
 			angular_velocity.AXIS_Y = 0;
 			angular_velocity.AXIS_Z = 0;
 		}
+
+		/*
+		 * Assign axial angular velocities
+		 */
 		xyz[0] = (int) angular_velocity.AXIS_X;
 		xyz[1] = (int) angular_velocity.AXIS_Y;
 		xyz[2] = (int) angular_velocity.AXIS_Z;
 	}
 }
-
-/*
- * Note : Feature_Extraction_State_0() sets Z-axis acceleration, ttt_3 = 0
- */
 
 void Feature_Extraction_State_0(void *handle, int *features) {
 	int ttt_initial[3]; // Base State Acceleration
