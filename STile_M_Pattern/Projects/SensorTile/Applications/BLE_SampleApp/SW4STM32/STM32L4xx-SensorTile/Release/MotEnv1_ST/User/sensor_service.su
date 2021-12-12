@@ -1,0 +1,15 @@
+sensor_service.c:114:12:safe_aci_gatt_update_char_value	24	static
+sensor_service.c:145:12:Add_ConfigW2ST_Service	56	static
+sensor_service.c:181:12:Stderr_Update	40	static
+sensor_service.c:260:19:Term_Update_AfterRead	272	static
+sensor_service.c:283:12:Config_Notify.part.0	264	static
+sensor_service.c:435:12:LED_Update.part.0	264	static
+sensor_service.c:212:12:Term_Update	296	static
+sensor_service.c:283:12:Config_Notify	32	static
+sensor_service.c:311:12:Add_HWServW2ST_Service	72	static
+sensor_service.c:384:12:Environmental_Update	304	static
+sensor_service.c:435:12:LED_Update	24	static
+sensor_service.c:464:6:setConnectable	88	static
+sensor_service.c:582:6:Read_Request_CB	48	static
+sensor_service.c:654:6:Attribute_Modified_CB	272	static
+sensor_service.c:783:6:HCI_Event_CB	280	static

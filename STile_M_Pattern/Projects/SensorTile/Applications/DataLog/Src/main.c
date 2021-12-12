@@ -275,8 +275,8 @@ void getAccel(void *handle, int *xyz) {
 
 void getAngularVelocity(void *handle_g, int *xyz) {
 	uint8_t id, status;
+	SensorAaxes_t angular_velocity;
 
-	SensorAxes_t angular_velocity;
 	BSP_GYRO_Get_Instance(handle_g, &id);
 	BSP_GYRO_IsInitialized(handle_g, &status);
 
@@ -936,7 +936,7 @@ int main(void) {
 				 * Upon return from Accel_Gyro_Sensor_Handler, initiate retraining.
 				 */
 				hasTrained = 0;
-				print("\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises");
+				print("\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises...");
 			}
 
 			if (SendOverUSB) {

@@ -1,0 +1,6 @@
+usbd_cdc_interface.c:146:15:CDC_Itf_DeInit	0	static
+usbd_cdc_interface.c:283:15:CDC_Itf_Receive	0	static
+usbd_cdc_interface.c:110:15:CDC_Itf_Init	16	static
+usbd_cdc_interface.c:160:15:CDC_Itf_Control	0	static
+usbd_cdc_interface.c:226:9:CDC_Fill_Buffer	16	static
+usbd_cdc_interface.c:243:6:CDC_TIM_PeriodElapsedCallback	16	static

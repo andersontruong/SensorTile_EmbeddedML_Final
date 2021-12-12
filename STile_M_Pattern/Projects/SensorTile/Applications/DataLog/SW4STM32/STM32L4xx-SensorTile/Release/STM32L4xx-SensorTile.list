@@ -7,17 +7,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         0001d0a0  08004190  08004190  00004190  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000b48  08021230  08021230  00021230  2**3
+  2 .rodata       00000b50  08021230  08021230  00021230  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM          00000008  08021d78  08021d78  00021d78  2**2
+  3 .ARM          00000008  08021d80  08021d80  00021d80  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .init_array   00000004  08021d80  08021d80  00021d80  2**2
+  4 .init_array   00000004  08021d88  08021d88  00021d88  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  5 .fini_array   00000004  08021d84  08021d84  00021d84  2**2
+  5 .fini_array   00000004  08021d8c  08021d8c  00021d8c  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .data         000006e8  20000000  08021d88  00030000  2**2
+  6 .data         000006e8  20000000  08021d90  00030000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .bss          0000273c  200006e8  08022470  000306e8  2**2
+  7 .bss          0000273c  200006e8  08022478  000306e8  2**2
                   ALLOC
   8 .noinit       00000000  10000000  10000000  000306e8  2**0
                   CONTENTS
@@ -1441,7 +1441,7 @@ LoopForever:
   ldr   sp, =_estack    /* Atollic update: set stack pointer */
  8005094:	20017fff 	.word	0x20017fff
 	ldr	r3, =_sidata
- 8005098:	08021d88 	.word	0x08021d88
+ 8005098:	08021d90 	.word	0x08021d90
 	ldr	r0, =_sdata
  800509c:	20000000 	.word	0x20000000
 	ldr	r3, =_edata
@@ -1715,7 +1715,7 @@ void DATALOG_SD_Init(void)
  8005242:	3708      	adds	r7, #8
  8005244:	46bd      	mov	sp, r7
  8005246:	bd80      	pop	{r7, pc}
- 8005248:	0802186c 	.word	0x0802186c
+ 8005248:	08021874 	.word	0x08021874
  800524c:	20000a6c 	.word	0x20000a6c
 
 08005250 <BP_ANN>:
@@ -3753,7 +3753,6 @@ void getAccel(void *handle, int *xyz) {
  80062c6:	4619      	mov	r1, r3
  80062c8:	6878      	ldr	r0, [r7, #4]
  80062ca:	f00b ff9b 	bl	8012204 <BSP_ACCELERO_Get_Instance>
-
 	BSP_ACCELERO_IsInitialized(handle, &status);
  80062ce:	f107 0317 	add.w	r3, r7, #23
  80062d2:	4619      	mov	r1, r3
@@ -3783,6 +3782,9 @@ void getAccel(void *handle, int *xyz) {
  80062fc:	613b      	str	r3, [r7, #16]
 		}
 
+		/*
+		 * Assign axial accelerations
+		 */
 		xyz[0] = (int) acceleration.AXIS_X;
  80062fe:	68ba      	ldr	r2, [r7, #8]
  8006300:	683b      	ldr	r3, [r7, #0]
@@ -3825,11 +3827,12 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  8006336:	4619      	mov	r1, r3
  8006338:	6878      	ldr	r0, [r7, #4]
  800633a:	f00c f98b 	bl	8012654 <BSP_GYRO_IsInitialized>
+
 	if (status == 1) {
  800633e:	7dbb      	ldrb	r3, [r7, #22]
  8006340:	2b01      	cmp	r3, #1
  8006342:	d119      	bne.n	8006378 <getAngularVelocity+0x5c>
-	if (BSP_GYRO_Get_Axes(handle_g, &angular_velocity) == COMPONENT_ERROR) {
+		if (BSP_GYRO_Get_Axes(handle_g, &angular_velocity) == COMPONENT_ERROR) {
  8006344:	f107 0308 	add.w	r3, r7, #8
  8006348:	4619      	mov	r1, r3
  800634a:	6878      	ldr	r0, [r7, #4]
@@ -3847,6 +3850,10 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  800635e:	2300      	movs	r3, #0
  8006360:	613b      	str	r3, [r7, #16]
 		}
+
+		/*
+		 * Assign axial angular velocities
+		 */
 		xyz[0] = (int) angular_velocity.AXIS_X;
  8006362:	68ba      	ldr	r2, [r7, #8]
  8006364:	683b      	ldr	r3, [r7, #0]
@@ -3869,10 +3876,6 @@ void getAngularVelocity(void *handle_g, int *xyz) {
  800637e:	bd80      	pop	{r7, pc}
 
 08006380 <Feature_Extraction_State_0>:
-
-/*
- * Note : Feature_Extraction_State_0() sets Z-axis acceleration, ttt_3 = 0
- */
 
 void Feature_Extraction_State_0(void *handle, int *features) {
  8006380:	b5b0      	push	{r4, r5, r7, lr}
@@ -6528,7 +6531,7 @@ int main(void) {
  8007a70:	4b28      	ldr	r3, [pc, #160]	; (8007b14 <main+0x7a0>)
  8007a72:	2200      	movs	r2, #0
  8007a74:	701a      	strb	r2, [r3, #0]
-				print("\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises");
+				print("\n\r\n\DOUBLE TAP to start recording new Two-Motion Exercises...");
  8007a76:	482a      	ldr	r0, [pc, #168]	; (8007b20 <main+0x7ac>)
  8007a78:	f7fe fac2 	bl	8006000 <print>
 			}
@@ -6594,7 +6597,7 @@ __attribute__((always_inline)) __STATIC_INLINE void __WFI(void)
  8007af0:	3f79d495 	.word	0x3f79d495
  8007af4:	3e028f5c 	.word	0x3e028f5c
  8007af8:	3ecbac71 	.word	0x3ecbac71
- 8007afc:	08021658 	.word	0x08021658
+ 8007afc:	0802165c 	.word	0x0802165c
  8007b00:	3e051eb8 	.word	0x3e051eb8
  8007b04:	3c23d70a 	.word	0x3c23d70a
  8007b08:	08005ea9 	.word	0x08005ea9
@@ -8832,7 +8835,7 @@ uint8_t *USBD_VCP_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
  8008758:	46bd      	mov	sp, r7
  800875a:	bd80      	pop	{r7, pc}
  800875c:	20002cfc 	.word	0x20002cfc
- 8008760:	08021664 	.word	0x08021664
+ 8008760:	08021668 	.word	0x08021668
 
 08008764 <USBD_VCP_ManufacturerStrDescriptor>:
   * @param  speed: Current device speed
@@ -8860,7 +8863,7 @@ uint8_t *USBD_VCP_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
  8008780:	46bd      	mov	sp, r7
  8008782:	bd80      	pop	{r7, pc}
  8008784:	20002cfc 	.word	0x20002cfc
- 8008788:	08021688 	.word	0x08021688
+ 8008788:	0802168c 	.word	0x0802168c
 
 0800878c <USBD_VCP_SerialStrDescriptor>:
   * @param  speed: Current device speed
@@ -8919,7 +8922,7 @@ uint8_t *USBD_VCP_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
  80087cc:	46bd      	mov	sp, r7
  80087ce:	bd80      	pop	{r7, pc}
  80087d0:	20002cfc 	.word	0x20002cfc
- 80087d4:	0802169c 	.word	0x0802169c
+ 80087d4:	080216a0 	.word	0x080216a0
 
 080087d8 <USBD_VCP_InterfaceStrDescriptor>:
   * @param  speed: Current device speed
@@ -8947,7 +8950,7 @@ uint8_t *USBD_VCP_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
  80087f4:	46bd      	mov	sp, r7
  80087f6:	bd80      	pop	{r7, pc}
  80087f8:	20002cfc 	.word	0x20002cfc
- 80087fc:	080216a8 	.word	0x080216a8
+ 80087fc:	080216ac 	.word	0x080216ac
 
 08008800 <Get_SerialNum>:
   * @brief  Create the serial number string descriptor 
@@ -9770,7 +9773,7 @@ HTS221_Error_et HTS221_Set_BduMode(void *handle, HTS221_State_et status)
  8008d52:	3710      	adds	r7, #16
  8008d54:	46bd      	mov	sp, r7
  8008d56:	bd80      	pop	{r7, pc}
- 8008d58:	080216b8 	.word	0x080216b8
+ 8008d58:	080216bc 	.word	0x080216bc
 
 08008d5c <HTS221_Set_Odr>:
 * @param  odr is the output data rate mode.
@@ -9849,7 +9852,7 @@ HTS221_Error_et HTS221_Set_Odr(void *handle, HTS221_Odr_et odr)
  8008dd2:	3710      	adds	r7, #16
  8008dd4:	46bd      	mov	sp, r7
  8008dd6:	bd80      	pop	{r7, pc}
- 8008dd8:	080216b8 	.word	0x080216b8
+ 8008dd8:	080216bc 	.word	0x080216bc
 
 08008ddc <HTS221_Get_Odr>:
 * @param  *handle Device handle.
@@ -9919,7 +9922,7 @@ void HTS221_assert_failed(uint8_t* file, uint32_t line)
   /* Infinite loop */
   while (1)
  8008e2e:	e7fe      	b.n	8008e2e <HTS221_assert_failed+0x16>
- 8008e30:	08021738 	.word	0x08021738
+ 8008e30:	0802173c 	.word	0x0802173c
 
 08008e34 <HTS221_H_Init>:
  * @param handle the device handle
@@ -16693,7 +16696,7 @@ status_t LSM303AGR_ACC_Get_Acceleration(void *handle, int *buff)
  800b0ac:	371c      	adds	r7, #28
  800b0ae:	46bd      	mov	sp, r7
  800b0b0:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
- 800b0b4:	08021768 	.word	0x08021768
+ 800b0b4:	08021770 	.word	0x08021770
 
 0800b0b8 <LSM303AGR_ACC_W_ODR>:
 * Input          : LSM303AGR_ACC_ODR_t
@@ -17429,7 +17432,7 @@ static DrvStatusTypeDef LSM303AGR_X_Init( DrvContextTypeDef *handle )
  800b4b6:	46bd      	mov	sp, r7
  800b4b8:	bd80      	pop	{r7, pc}
  800b4ba:	bf00      	nop
- 800b4bc:	080217c8 	.word	0x080217c8
+ 800b4bc:	080217d0 	.word	0x080217d0
  800b4c0:	42c80000 	.word	0x42c80000
 
 0800b4c4 <LSM303AGR_X_DeInit>:
@@ -21173,7 +21176,7 @@ static DrvStatusTypeDef LSM303AGR_M_Get_Axes_Raw( DrvContextTypeDef *handle, int
  800c8ea:	46bd      	mov	sp, r7
  800c8ec:	bd80      	pop	{r7, pc}
  800c8ee:	bf00      	nop
- 800c8f0:	080217cc 	.word	0x080217cc
+ 800c8f0:	080217d4 	.word	0x080217d4
 
 0800c8f4 <LSM6DSM_ACC_GYRO_ReadReg>:
 * Input				: Register Address
@@ -27486,7 +27489,7 @@ static DrvStatusTypeDef LSM6DSM_X_Get_Axes_Raw(DrvContextTypeDef *handle, int16_
  800eba2:	3710      	adds	r7, #16
  800eba4:	46bd      	mov	sp, r7
  800eba6:	bd80      	pop	{r7, pc}
- 800eba8:	080217d4 	.word	0x080217d4
+ 800eba8:	080217dc 	.word	0x080217dc
 
 0800ebac <LSM6DSM_X_Set_ODR_When_Enabled>:
  * @param odr the functional output data rate to be set
@@ -27989,7 +27992,7 @@ static DrvStatusTypeDef LSM6DSM_G_Get_Axes_Raw(DrvContextTypeDef *handle, int16_
  800ef5e:	3710      	adds	r7, #16
  800ef60:	46bd      	mov	sp, r7
  800ef62:	bd80      	pop	{r7, pc}
- 800ef64:	080217d4 	.word	0x080217d4
+ 800ef64:	080217dc 	.word	0x080217dc
 
 0800ef68 <LSM6DSM_G_Set_ODR_When_Enabled>:
  * @param odr the functional output data rate to be set
@@ -31782,7 +31785,7 @@ static DrvStatusTypeDef STC3115_Init( DrvContextTypeDef* handle )
  80102d6:	3768      	adds	r7, #104	; 0x68
  80102d8:	46bd      	mov	sp, r7
  80102da:	bdb0      	pop	{r4, r5, r7, pc}
- 80102dc:	080217dc 	.word	0x080217dc
+ 80102dc:	080217e4 	.word	0x080217e4
  80102e0:	54a33dd9 	.word	0x54a33dd9
 
 080102e4 <STC3115_DeInit>:
@@ -33826,7 +33829,7 @@ void BSP_LED_Init(Led_TypeDef Led)
  8010e64:	46bd      	mov	sp, r7
  8010e66:	bd80      	pop	{r7, pc}
  8010e68:	40021000 	.word	0x40021000
- 8010e6c:	0802181c 	.word	0x0802181c
+ 8010e6c:	08021824 	.word	0x08021824
  8010e70:	200003e4 	.word	0x200003e4
 
 08010e74 <BSP_LED_On>:
@@ -33885,7 +33888,7 @@ void BSP_LED_On(Led_TypeDef Led)
  8010ec4:	46bd      	mov	sp, r7
  8010ec6:	bd80      	pop	{r7, pc}
  8010ec8:	200003e4 	.word	0x200003e4
- 8010ecc:	0802181c 	.word	0x0802181c
+ 8010ecc:	08021824 	.word	0x08021824
 
 08010ed0 <BSP_LED_Off>:
 *            @arg  LED3
@@ -33943,7 +33946,7 @@ void BSP_LED_Off(Led_TypeDef Led)
  8010f20:	46bd      	mov	sp, r7
  8010f22:	bd80      	pop	{r7, pc}
  8010f24:	200003e4 	.word	0x200003e4
- 8010f28:	0802181c 	.word	0x0802181c
+ 8010f28:	08021824 	.word	0x08021824
 
 08010f2c <Sensor_IO_I2C_Init>:
  * @param  None
@@ -48253,7 +48256,7 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __RBIT(uint32_t value)
         while(READ_BIT(RCC->CR, RCC_CR_HSERDY) != RESET)
  8015fb6:	e010      	b.n	8015fda <HAL_RCC_OscConfig+0x2ca>
  8015fb8:	40021000 	.word	0x40021000
- 8015fbc:	08021824 	.word	0x08021824
+ 8015fbc:	0802182c 	.word	0x0802182c
  8015fc0:	200003f4 	.word	0x200003f4
         {
           if((HAL_GetTick() - tickstart) > HSE_TIMEOUT_VALUE)
@@ -49410,7 +49413,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  8016656:	bd80      	pop	{r7, pc}
  8016658:	40022000 	.word	0x40022000
  801665c:	40021000 	.word	0x40021000
- 8016660:	08021824 	.word	0x08021824
+ 8016660:	0802182c 	.word	0x0802182c
  8016664:	200003f4 	.word	0x200003f4
 
 08016668 <HAL_RCC_GetSysClockFreq>:
@@ -49697,7 +49700,7 @@ uint32_t HAL_RCC_GetSysClockFreq(void)
  801684c:	4770      	bx	lr
  801684e:	bf00      	nop
  8016850:	40021000 	.word	0x40021000
- 8016854:	0802183c 	.word	0x0802183c
+ 8016854:	08021844 	.word	0x08021844
  8016858:	00f42400 	.word	0x00f42400
  801685c:	007a1200 	.word	0x007a1200
 
@@ -63611,10 +63614,10 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801b96a:	4798      	blx	r3
  801b96c:	3601      	adds	r6, #1
  801b96e:	e7f2      	b.n	801b956 <__libc_init_array+0x1e>
- 801b970:	08021d80 	.word	0x08021d80
- 801b974:	08021d80 	.word	0x08021d80
- 801b978:	08021d80 	.word	0x08021d80
- 801b97c:	08021d84 	.word	0x08021d84
+ 801b970:	08021d88 	.word	0x08021d88
+ 801b974:	08021d88 	.word	0x08021d88
+ 801b978:	08021d88 	.word	0x08021d88
+ 801b97c:	08021d8c 	.word	0x08021d8c
 
 0801b980 <malloc>:
  801b980:	4b02      	ldr	r3, [pc, #8]	; (801b98c <malloc+0xc>)
@@ -64237,11 +64240,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801bf38:	e7ee      	b.n	801bf18 <_printf_float+0x2b8>
  801bf3a:	bf00      	nop
  801bf3c:	7fefffff 	.word	0x7fefffff
- 801bf40:	08021884 	.word	0x08021884
- 801bf44:	08021888 	.word	0x08021888
- 801bf48:	08021890 	.word	0x08021890
- 801bf4c:	0802188c 	.word	0x0802188c
- 801bf50:	08021894 	.word	0x08021894
+ 801bf40:	0802188c 	.word	0x0802188c
+ 801bf44:	08021890 	.word	0x08021890
+ 801bf48:	08021898 	.word	0x08021898
+ 801bf4c:	08021894 	.word	0x08021894
+ 801bf50:	0802189c 	.word	0x0802189c
  801bf54:	9a0a      	ldr	r2, [sp, #40]	; 0x28
  801bf56:	6da3      	ldr	r3, [r4, #88]	; 0x58
  801bf58:	429a      	cmp	r2, r3
@@ -64732,8 +64735,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801c3e4:	f104 0619 	add.w	r6, r4, #25
  801c3e8:	e7f5      	b.n	801c3d6 <_printf_i+0x22e>
  801c3ea:	bf00      	nop
- 801c3ec:	08021896 	.word	0x08021896
- 801c3f0:	080218a7 	.word	0x080218a7
+ 801c3ec:	0802189e 	.word	0x0802189e
+ 801c3f0:	080218af 	.word	0x080218af
 
 0801c3f4 <_scanf_float>:
  801c3f4:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -65127,8 +65130,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801c806:	2500      	movs	r5, #0
  801c808:	e635      	b.n	801c476 <_scanf_float+0x82>
  801c80a:	bf00      	nop
- 801c80c:	080218b8 	.word	0x080218b8
- 801c810:	08021d30 	.word	0x08021d30
+ 801c80c:	080218c0 	.word	0x080218c0
+ 801c810:	08021d38 	.word	0x08021d38
 
 0801c814 <iprintf>:
  801c814:	b40f      	push	{r0, r1, r2, r3}
@@ -65502,8 +65505,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801cb80:	e785      	b.n	801ca8e <_strtod_l+0x1a6>
  801cb82:	f04f 0c01 	mov.w	ip, #1
  801cb86:	e7f6      	b.n	801cb76 <_strtod_l+0x28e>
- 801cb88:	08021b74 	.word	0x08021b74
- 801cb8c:	080218c0 	.word	0x080218c0
+ 801cb88:	08021b7c 	.word	0x08021b7c
+ 801cb8c:	080218c8 	.word	0x080218c8
  801cb90:	7ff00000 	.word	0x7ff00000
  801cb94:	9b1d      	ldr	r3, [sp, #116]	; 0x74
  801cb96:	1c59      	adds	r1, r3, #1
@@ -65788,13 +65791,13 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ce70:	f04f 0b00 	mov.w	fp, #0
  801ce74:	6023      	str	r3, [r4, #0]
  801ce76:	e789      	b.n	801cd8c <_strtod_l+0x4a4>
- 801ce78:	08021891 	.word	0x08021891
- 801ce7c:	080218d4 	.word	0x080218d4
- 801ce80:	08021889 	.word	0x08021889
- 801ce84:	08021a14 	.word	0x08021a14
- 801ce88:	08021d30 	.word	0x08021d30
- 801ce8c:	08021c10 	.word	0x08021c10
- 801ce90:	08021be8 	.word	0x08021be8
+ 801ce78:	08021899 	.word	0x08021899
+ 801ce7c:	080218dc 	.word	0x080218dc
+ 801ce80:	08021891 	.word	0x08021891
+ 801ce84:	08021a1c 	.word	0x08021a1c
+ 801ce88:	08021d38 	.word	0x08021d38
+ 801ce8c:	08021c18 	.word	0x08021c18
+ 801ce90:	08021bf0 	.word	0x08021bf0
  801ce94:	7ff00000 	.word	0x7ff00000
  801ce98:	7ca00000 	.word	0x7ca00000
  801ce9c:	7fefffff 	.word	0x7fefffff
@@ -66165,7 +66168,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801d254:	39500000 	.word	0x39500000
  801d258:	000fffff 	.word	0x000fffff
  801d25c:	7fefffff 	.word	0x7fefffff
- 801d260:	080218e8 	.word	0x080218e8
+ 801d260:	080218f0 	.word	0x080218f0
  801d264:	4631      	mov	r1, r6
  801d266:	4628      	mov	r0, r5
  801d268:	f002 f93c 	bl	801f4e4 <__ratio>
@@ -66512,7 +66515,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801d606:	230a      	movs	r3, #10
  801d608:	e7ad      	b.n	801d566 <_strtol_l.isra.0+0x5e>
  801d60a:	bf00      	nop
- 801d60c:	08021911 	.word	0x08021911
+ 801d60c:	08021919 	.word	0x08021919
 
 0801d610 <_strtol_r>:
  801d610:	f7ff bf7a 	b.w	801d508 <_strtol_l.isra.0>
@@ -66942,15 +66945,15 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801da5c:	3fc68a28 	.word	0x3fc68a28
  801da60:	509f79fb 	.word	0x509f79fb
  801da64:	3fd34413 	.word	0x3fd34413
- 801da68:	08021a1e 	.word	0x08021a1e
- 801da6c:	08021a35 	.word	0x08021a35
+ 801da68:	08021a26 	.word	0x08021a26
+ 801da6c:	08021a3d 	.word	0x08021a3d
  801da70:	7ff00000 	.word	0x7ff00000
- 801da74:	08021a1a 	.word	0x08021a1a
- 801da78:	08021a11 	.word	0x08021a11
- 801da7c:	08021895 	.word	0x08021895
+ 801da74:	08021a22 	.word	0x08021a22
+ 801da78:	08021a19 	.word	0x08021a19
+ 801da7c:	0802189d 	.word	0x0802189d
  801da80:	3ff80000 	.word	0x3ff80000
- 801da84:	08021c10 	.word	0x08021c10
- 801da88:	08021a94 	.word	0x08021a94
+ 801da84:	08021c18 	.word	0x08021c18
+ 801da88:	08021a9c 	.word	0x08021a9c
  801da8c:	6a63      	ldr	r3, [r4, #36]	; 0x24
  801da8e:	9a00      	ldr	r2, [sp, #0]
  801da90:	601a      	str	r2, [r3, #0]
@@ -67240,8 +67243,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ddac:	f8dd a01c 	ldr.w	sl, [sp, #28]
  801ddb0:	e04a      	b.n	801de48 <_dtoa_r+0x6d8>
  801ddb2:	bf00      	nop
- 801ddb4:	08021c10 	.word	0x08021c10
- 801ddb8:	08021be8 	.word	0x08021be8
+ 801ddb4:	08021c18 	.word	0x08021c18
+ 801ddb8:	08021bf0 	.word	0x08021bf0
  801ddbc:	3ff00000 	.word	0x3ff00000
  801ddc0:	40240000 	.word	0x40240000
  801ddc4:	401c0000 	.word	0x401c0000
@@ -67827,9 +67830,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e334:	f000 fcf4 	bl	801ed20 <__multadd>
  801e338:	4683      	mov	fp, r0
  801e33a:	e7eb      	b.n	801e314 <_dtoa_r+0xba4>
- 801e33c:	08021a94 	.word	0x08021a94
- 801e340:	08021894 	.word	0x08021894
- 801e344:	08021a11 	.word	0x08021a11
+ 801e33c:	08021a9c 	.word	0x08021a9c
+ 801e340:	0802189c 	.word	0x0802189c
+ 801e344:	08021a19 	.word	0x08021a19
 
 0801e348 <std>:
  801e348:	2300      	movs	r3, #0
@@ -67954,7 +67957,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e45a:	61a3      	str	r3, [r4, #24]
  801e45c:	e7d2      	b.n	801e404 <__sinit+0xc>
  801e45e:	bf00      	nop
- 801e460:	08021880 	.word	0x08021880
+ 801e460:	08021888 	.word	0x08021888
  801e464:	0801e391 	.word	0x0801e391
 
 0801e468 <__sfp>:
@@ -68009,7 +68012,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e4e6:	603b      	str	r3, [r7, #0]
  801e4e8:	e7ee      	b.n	801e4c8 <__sfp+0x60>
  801e4ea:	bf00      	nop
- 801e4ec:	08021880 	.word	0x08021880
+ 801e4ec:	08021888 	.word	0x08021888
  801e4f0:	ffff0001 	.word	0xffff0001
 
 0801e4f4 <_fwalk_reent>:
@@ -68432,9 +68435,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801e8fe:	2750      	movs	r7, #80	; 0x50
  801e900:	e713      	b.n	801e72a <__gethex+0x12a>
  801e902:	bf00      	nop
- 801e904:	08021b74 	.word	0x08021b74
- 801e908:	08021a94 	.word	0x08021a94
- 801e90c:	08021b08 	.word	0x08021b08
+ 801e904:	08021b7c 	.word	0x08021b7c
+ 801e908:	08021a9c 	.word	0x08021a9c
+ 801e90c:	08021b10 	.word	0x08021b10
  801e910:	9b15      	ldr	r3, [sp, #84]	; 0x54
  801e912:	2b00      	cmp	r3, #0
  801e914:	d1eb      	bne.n	801e8ee <__gethex+0x2ee>
@@ -68578,7 +68581,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ea82:	42b0      	cmp	r0, r6
  801ea84:	dbe7      	blt.n	801ea56 <__gethex+0x456>
  801ea86:	e7f0      	b.n	801ea6a <__gethex+0x46a>
- 801ea88:	08021a94 	.word	0x08021a94
+ 801ea88:	08021a9c 	.word	0x08021a9c
 
 0801ea8c <L_shift>:
  801ea8c:	f1c2 0208 	rsb	r2, r2, #8
@@ -68843,8 +68846,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801eccc:	e9c0 3303 	strd	r3, r3, [r0, #12]
  801ecd0:	e7f7      	b.n	801ecc2 <_Balloc+0x66>
  801ecd2:	bf00      	nop
- 801ecd4:	08021a1e 	.word	0x08021a1e
- 801ecd8:	08021b88 	.word	0x08021b88
+ 801ecd4:	08021a26 	.word	0x08021a26
+ 801ecd8:	08021b90 	.word	0x08021b90
 
 0801ecdc <_Bfree>:
  801ecdc:	b570      	push	{r4, r5, r6, lr}
@@ -68872,8 +68875,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ed10:	6021      	str	r1, [r4, #0]
  801ed12:	f843 4022 	str.w	r4, [r3, r2, lsl #2]
  801ed16:	bd70      	pop	{r4, r5, r6, pc}
- 801ed18:	08021a1e 	.word	0x08021a1e
- 801ed1c:	08021b88 	.word	0x08021b88
+ 801ed18:	08021a26 	.word	0x08021a26
+ 801ed1c:	08021b90 	.word	0x08021b90
 
 0801ed20 <__multadd>:
  801ed20:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
@@ -68929,8 +68932,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801eda4:	4620      	mov	r0, r4
  801eda6:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
  801edaa:	bf00      	nop
- 801edac:	08021a94 	.word	0x08021a94
- 801edb0:	08021b88 	.word	0x08021b88
+ 801edac:	08021a9c 	.word	0x08021a9c
+ 801edb0:	08021b90 	.word	0x08021b90
 
 0801edb4 <__s2b>:
  801edb4:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -68991,8 +68994,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ee38:	f7ff ff72 	bl	801ed20 <__multadd>
  801ee3c:	e7ee      	b.n	801ee1c <__s2b+0x68>
  801ee3e:	bf00      	nop
- 801ee40:	08021a94 	.word	0x08021a94
- 801ee44:	08021b88 	.word	0x08021b88
+ 801ee40:	08021a9c 	.word	0x08021a9c
+ 801ee44:	08021b90 	.word	0x08021b90
 
 0801ee48 <__hi0bits>:
  801ee48:	0c03      	lsrs	r3, r0, #16
@@ -69086,8 +69089,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ef06:	6103      	str	r3, [r0, #16]
  801ef08:	bd10      	pop	{r4, pc}
  801ef0a:	bf00      	nop
- 801ef0c:	08021a94 	.word	0x08021a94
- 801ef10:	08021b88 	.word	0x08021b88
+ 801ef0c:	08021a9c 	.word	0x08021a9c
+ 801ef10:	08021b90 	.word	0x08021b90
 
 0801ef14 <__multiply>:
  801ef14:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -69207,8 +69210,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f052:	3f01      	subs	r7, #1
  801f054:	e7a1      	b.n	801ef9a <__multiply+0x86>
  801f056:	bf00      	nop
- 801f058:	08021a94 	.word	0x08021a94
- 801f05c:	08021b88 	.word	0x08021b88
+ 801f058:	08021a9c 	.word	0x08021a9c
+ 801f05c:	08021b90 	.word	0x08021b90
 
 0801f060 <__pow5mult>:
  801f060:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -69276,9 +69279,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f100:	4638      	mov	r0, r7
  801f102:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
  801f106:	bf00      	nop
- 801f108:	08021cd8 	.word	0x08021cd8
- 801f10c:	08021a1e 	.word	0x08021a1e
- 801f110:	08021b88 	.word	0x08021b88
+ 801f108:	08021ce0 	.word	0x08021ce0
+ 801f10c:	08021a26 	.word	0x08021a26
+ 801f110:	08021b90 	.word	0x08021b90
 
 0801f114 <__lshift>:
  801f114:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -69357,8 +69360,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f1de:	d8f9      	bhi.n	801f1d4 <__lshift+0xc0>
  801f1e0:	e7ea      	b.n	801f1b8 <__lshift+0xa4>
  801f1e2:	bf00      	nop
- 801f1e4:	08021a94 	.word	0x08021a94
- 801f1e8:	08021b88 	.word	0x08021b88
+ 801f1e4:	08021a9c 	.word	0x08021a9c
+ 801f1e8:	08021b90 	.word	0x08021b90
 
 0801f1ec <__mcmp>:
  801f1ec:	b530      	push	{r4, r5, lr}
@@ -69483,8 +69486,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f326:	e7e0      	b.n	801f2ea <__mdiff+0xc6>
  801f328:	3e01      	subs	r6, #1
  801f32a:	e7ea      	b.n	801f302 <__mdiff+0xde>
- 801f32c:	08021a94 	.word	0x08021a94
- 801f330:	08021b88 	.word	0x08021b88
+ 801f32c:	08021a9c 	.word	0x08021a9c
+ 801f330:	08021b90 	.word	0x08021b90
 
 0801f334 <__ulp>:
  801f334:	b082      	sub	sp, #8
@@ -69640,8 +69643,8 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f4d2:	f7ff fcb9 	bl	801ee48 <__hi0bits>
  801f4d6:	ebc0 1042 	rsb	r0, r0, r2, lsl #5
  801f4da:	e7df      	b.n	801f49c <__d2b+0x70>
- 801f4dc:	08021a94 	.word	0x08021a94
- 801f4e0:	08021b88 	.word	0x08021b88
+ 801f4dc:	08021a9c 	.word	0x08021a9c
+ 801f4e0:	08021b90 	.word	0x08021b90
 
 0801f4e4 <__ratio>:
  801f4e4:	e92d 4ff7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -70031,11 +70034,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801f88c:	f7fc fc8c 	bl	801c1a8 <_printf_i>
  801f890:	e7eb      	b.n	801f86a <_svfiprintf_r+0x1c2>
  801f892:	bf00      	nop
- 801f894:	08021ce4 	.word	0x08021ce4
- 801f898:	08021cee 	.word	0x08021cee
+ 801f894:	08021cec 	.word	0x08021cec
+ 801f898:	08021cf6 	.word	0x08021cf6
  801f89c:	0801bc61 	.word	0x0801bc61
  801f8a0:	0801f5f1 	.word	0x0801f5f1
- 801f8a4:	08021cea 	.word	0x08021cea
+ 801f8a4:	08021cf2 	.word	0x08021cf2
 
 0801f8a8 <__sfputc_r>:
  801f8a8:	6893      	ldr	r3, [r2, #8]
@@ -70318,14 +70321,14 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fb34:	f7fc fb38 	bl	801c1a8 <_printf_i>
  801fb38:	e7e4      	b.n	801fb04 <_vfiprintf_r+0x208>
  801fb3a:	bf00      	nop
- 801fb3c:	08021ac8 	.word	0x08021ac8
- 801fb40:	08021ae8 	.word	0x08021ae8
- 801fb44:	08021aa8 	.word	0x08021aa8
- 801fb48:	08021ce4 	.word	0x08021ce4
- 801fb4c:	08021cee 	.word	0x08021cee
+ 801fb3c:	08021ad0 	.word	0x08021ad0
+ 801fb40:	08021af0 	.word	0x08021af0
+ 801fb44:	08021ab0 	.word	0x08021ab0
+ 801fb48:	08021cec 	.word	0x08021cec
+ 801fb4c:	08021cf6 	.word	0x08021cf6
  801fb50:	0801bc61 	.word	0x0801bc61
  801fb54:	0801f8d7 	.word	0x0801f8d7
- 801fb58:	08021cea 	.word	0x08021cea
+ 801fb58:	08021cf2 	.word	0x08021cf2
  801fb5c:	00000000 	.word	0x00000000
 
 0801fb60 <nan>:
@@ -70485,9 +70488,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fcac:	f04f 37ff 	mov.w	r7, #4294967295
  801fcb0:	e7ea      	b.n	801fc88 <__swbuf_r+0x6c>
  801fcb2:	bf00      	nop
- 801fcb4:	08021ac8 	.word	0x08021ac8
- 801fcb8:	08021ae8 	.word	0x08021ae8
- 801fcbc:	08021aa8 	.word	0x08021aa8
+ 801fcb4:	08021ad0 	.word	0x08021ad0
+ 801fcb8:	08021af0 	.word	0x08021af0
+ 801fcbc:	08021ab0 	.word	0x08021ab0
 
 0801fcc0 <__ascii_wctomb>:
  801fcc0:	b149      	cbz	r1, 801fcd6 <__ascii_wctomb+0x16>
@@ -70612,9 +70615,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fdc8:	e7f7      	b.n	801fdba <__swsetup_r+0xba>
  801fdca:	bf00      	nop
  801fdcc:	2000050c 	.word	0x2000050c
- 801fdd0:	08021ac8 	.word	0x08021ac8
- 801fdd4:	08021ae8 	.word	0x08021ae8
- 801fdd8:	08021aa8 	.word	0x08021aa8
+ 801fdd0:	08021ad0 	.word	0x08021ad0
+ 801fdd4:	08021af0 	.word	0x08021af0
+ 801fdd8:	08021ab0 	.word	0x08021ab0
 
 0801fddc <__assert_func>:
  801fddc:	b51f      	push	{r0, r1, r2, r3, r4, lr}
@@ -70637,9 +70640,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801fe04:	e7f3      	b.n	801fdee <__assert_func+0x12>
  801fe06:	bf00      	nop
  801fe08:	2000050c 	.word	0x2000050c
- 801fe0c:	08021cf5 	.word	0x08021cf5
- 801fe10:	08021d02 	.word	0x08021d02
- 801fe14:	08021d30 	.word	0x08021d30
+ 801fe0c:	08021cfd 	.word	0x08021cfd
+ 801fe10:	08021d0a 	.word	0x08021d0a
+ 801fe14:	08021d38 	.word	0x08021d38
 
 0801fe18 <_close_r>:
  801fe18:	b538      	push	{r3, r4, r5, lr}
@@ -70831,9 +70834,9 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  801ffaa:	bf08      	it	eq
  801ffac:	68ec      	ldreq	r4, [r5, #12]
  801ffae:	e7da      	b.n	801ff66 <_fflush_r+0x22>
- 801ffb0:	08021ac8 	.word	0x08021ac8
- 801ffb4:	08021ae8 	.word	0x08021ae8
- 801ffb8:	08021aa8 	.word	0x08021aa8
+ 801ffb0:	08021ad0 	.word	0x08021ad0
+ 801ffb4:	08021af0 	.word	0x08021af0
+ 801ffb8:	08021ab0 	.word	0x08021ab0
 
 0801ffbc <fiprintf>:
  801ffbc:	b40e      	push	{r1, r2, r3}
@@ -71519,7 +71522,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  8020638:	8800759c 	.word	0x8800759c
  802063c:	7e37e43c 	.word	0x7e37e43c
  8020640:	7ff00000 	.word	0x7ff00000
- 8020644:	08021d30 	.word	0x08021d30
+ 8020644:	08021d38 	.word	0x08021d38
  8020648:	433fffff 	.word	0x433fffff
  802064c:	3ff00000 	.word	0x3ff00000
  8020650:	3fefffff 	.word	0x3fefffff
@@ -71995,11 +71998,11 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  8020b64:	43400000 	.word	0x43400000
  8020b68:	0003988e 	.word	0x0003988e
  8020b6c:	000bb679 	.word	0x000bb679
- 8020b70:	08021d38 	.word	0x08021d38
+ 8020b70:	08021d40 	.word	0x08021d40
  8020b74:	3ff00000 	.word	0x3ff00000
  8020b78:	40080000 	.word	0x40080000
- 8020b7c:	08021d58 	.word	0x08021d58
- 8020b80:	08021d48 	.word	0x08021d48
+ 8020b7c:	08021d60 	.word	0x08021d60
+ 8020b80:	08021d50 	.word	0x08021d50
  8020b84:	a3b5      	add	r3, pc, #724	; (adr r3, 8020e5c <__ieee754_pow+0xa3c>)
  8020b86:	e9d3 2300 	ldrd	r2, r3, [r3]
  8020b8a:	4640      	mov	r0, r8
@@ -72501,7 +72504,7 @@ USBD_StatusTypeDef  USBD_CtlReceiveStatus (USBD_HandleTypeDef  *pdev)
  80210f6:	fa44 f202 	asrne.w	r2, r4, r2
  80210fa:	ea41 0402 	orrne.w	r4, r1, r2
  80210fe:	e7cd      	b.n	802109c <rint+0xa8>
- 8021100:	08021d68 	.word	0x08021d68
+ 8021100:	08021d70 	.word	0x08021d70
  8021104:	000fffff 	.word	0x000fffff
 
 08021108 <scalbn>:

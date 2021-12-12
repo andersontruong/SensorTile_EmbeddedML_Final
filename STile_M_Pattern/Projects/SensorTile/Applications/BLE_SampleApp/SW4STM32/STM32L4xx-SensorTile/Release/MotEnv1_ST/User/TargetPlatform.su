@@ -1,0 +1,3 @@
+TargetPlatform.c:68:6:InitTargetPlatform	272	static
+TargetPlatform.c:171:6:LedOnTargetPlatform	0	static
+TargetPlatform.c:181:6:LedOffTargetPlatform	0	static

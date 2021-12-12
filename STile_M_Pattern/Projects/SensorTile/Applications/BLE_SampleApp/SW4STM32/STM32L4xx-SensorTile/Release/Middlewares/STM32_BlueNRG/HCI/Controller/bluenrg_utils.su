@@ -1,0 +1,10 @@
+bluenrg_utils.c:91:5:program_device	64	static
+bluenrg_utils.c:186:5:read_IFR	32	static
+bluenrg_utils.c:215:6:parse_IFR_data_config	0	static
+bluenrg_utils.c:226:5:IFR_validate	0	static
+bluenrg_utils.c:244:6:change_IFR_data_config	8	static
+bluenrg_utils.c:333:9:verify_IFR	96	static
+bluenrg_utils.c:359:9:getBlueNRGVersion	32	static
+bluenrg_utils.c:256:5:program_IFR	2144	static
+bluenrg_utils.c:378:9:getBlueNRGUpdaterVersion	16	static
+bluenrg_utils.c:396:9:isHWBootloader_Patched	24	static
