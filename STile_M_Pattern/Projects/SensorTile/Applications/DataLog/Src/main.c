@@ -275,7 +275,7 @@ void getAccel(void *handle, int *xyz) {
 
 void getAngularVelocity(void *handle_g, int *xyz) {
 	uint8_t id, status;
-	SensorAaxes_t angular_velocity;
+	SensorAxes_t angular_velocity;
 
 	BSP_GYRO_Get_Instance(handle_g, &id);
 	BSP_GYRO_IsInitialized(handle_g, &status);
@@ -295,11 +295,9 @@ void getAngularVelocity(void *handle_g, int *xyz) {
 		xyz[2] = (int) angular_velocity.AXIS_Z;
 	}
 }
-
 void Feature_Extraction_State_0(void *handle, int *features) {
 	int ttt_initial[3]; // Base State Acceleration
 	int ttt[3]; // State Acceleration
-	int i; // Indexing Number
 	int axis_index;
 	float accel_mag;
 
@@ -325,11 +323,6 @@ void Feature_Extraction_State_0(void *handle, int *features) {
 	getAccel(handle, ttt);
 
 	// Compute Magnitude of Acceleration
-	for (axis_index = 0; axis_index < 3; axis_index++) {
-		accel_mag += pow((ttt[axis_index] - ttt_initial[axis_index]), 2);
-	}
-
-	//
 
 	for (axis_index = 0; axis_index < 3; axis_index++) {
 		*(features + axis_index) = ttt[axis_index] - ttt_initial[axis_index];
@@ -396,7 +389,7 @@ void Feature_Extraction_State_1(void *handle_g, int *features) {
 		* offset value
 		*/
 		for (axis_index = 0; axis_index < 3; axis_index++) {
-			ttt_initial[axis_index] = ttt[axis_index] - ttt_offset[axis_index];
+			ttt_initial[axis_index] = ttt[axis_index];
 		}
 		/*
 		* Introduce integration time period delay
