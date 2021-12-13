@@ -535,7 +535,6 @@ void printOutput_ANN(ANN *net, int input_state, int * error) {
 }
 
 void TrainOrientation(void *handle, void *handle_g, ANN *net) {
-
 	uint8_t id, id_g;
 	SensorAxes_t acceleration, angular_velocity;
 	uint8_t status, status_g;
@@ -593,8 +592,8 @@ void TrainOrientation(void *handle, void *handle_g, ANN *net) {
 					}
 				}
 				print("\r\nRecording Exercise #%i:", i+1);
-				Feature_Extraction_State_0(handle, &features);
-				Feature_Extraction_State_1(handle_g, &features);
+				Feature_Extraction_State_0(handle, features);
+				Feature_Extraction_State_1(handle_g, features);
 
 				print("\r\nAcceleration:\tX:%i\tY:\%i\tZ:%i", features[0], features[1], features[2]);
 
